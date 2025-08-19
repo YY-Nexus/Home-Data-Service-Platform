@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -29,6 +28,7 @@ export function LogoManager({ onLogoChange }: LogoManagerProps) {
     type: "default",
   })
   const [previewData, setPreviewData] = useState<LogoData>(logoData)
+  const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,6 +46,7 @@ export function LogoManager({ onLogoChange }: LogoManagerProps) {
         return
       }
 
+      setIsUploading(true)
       const reader = new FileReader()
       reader.onload = (e) => {
         const result = e.target?.result as string
@@ -54,6 +55,11 @@ export function LogoManager({ onLogoChange }: LogoManagerProps) {
           url: result,
           type: "upload",
         })
+        setIsUploading(false)
+      }
+      reader.onerror = () => {
+        alert("文件读取失败，请重试")
+        setIsUploading(false)
       }
       reader.readAsDataURL(file)
     }
@@ -73,6 +79,14 @@ export function LogoManager({ onLogoChange }: LogoManagerProps) {
 
     // 触发页面刷新以更新头部logo
     window.dispatchEvent(new CustomEvent("logoUpdated", { detail: previewData }))
+
+    // 显示成功提示
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("标志设置", {
+        body: "企业标志已成功更新！",
+        icon: previewData.url,
+      })
+    }
   }
 
   const handleReset = () => {
@@ -87,6 +101,31 @@ export function LogoManager({ onLogoChange }: LogoManagerProps) {
     localStorage.removeItem("companyLogo")
   }
 
+  const handleTemplateSelect = (template: LogoData) => {
+    setPreviewData(template)
+  }
+
+  const templates: LogoData[] = [
+    {
+      url: "/images/yanyu-cloud-logo.png",
+      title: "言语云企业管理系统",
+      subtitle: "YanYu Cloud Enterprise Management",
+      type: "default",
+    },
+    {
+      url: "/images/zuoyou-logo.png",
+      title: "左右科技有限公司",
+      subtitle: "ZuoYou Technology Co., Ltd.",
+      type: "default",
+    },
+    {
+      url: "/placeholder.svg?height=60&width=200&text=企业标志",
+      title: "您的企业名称",
+      subtitle: "Your Company Name",
+      type: "default",
+    },
+  ]
+
   return (
     <>
       <Button variant="ghost" size="sm" onClick={() => setIsOpen(true)} className="text-gray-600 hover:text-gray-800">
@@ -95,7 +134,7 @@ export function LogoManager({ onLogoChange }: LogoManagerProps) {
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <ImageIcon className="w-5 h-5 mr-2 text-sky-600" />
@@ -109,7 +148,7 @@ export function LogoManager({ onLogoChange }: LogoManagerProps) {
               <Label className="text-sm font-medium mb-3 block">预览效果</Label>
               <div className="flex items-center space-x-4 bg-white p-4 rounded-lg border">
                 <img
-                  src={previewData.url || "/placeholder.svg"}
+                  src={previewData.url || "/placeholder.svg?height=60&width=200&text=标志"}
                   alt="企业标志"
                   className="h-12 w-auto object-contain"
                   onError={(e) => {
@@ -129,9 +168,14 @@ export function LogoManager({ onLogoChange }: LogoManagerProps) {
               <div>
                 <Label className="text-sm font-medium mb-2 block">企业标志图片</Label>
                 <div className="flex items-center space-x-2">
-                  <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="flex-1">
+                  <Button
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="flex-1"
+                  >
                     <Upload className="w-4 h-4 mr-2" />
-                    上传标志
+                    {isUploading ? "上传中..." : "上传标志"}
                   </Button>
                   <Input
                     ref={fileInputRef}
@@ -186,48 +230,41 @@ export function LogoManager({ onLogoChange }: LogoManagerProps) {
             {/* 预设模板 */}
             <div>
               <Label className="text-sm font-medium mb-3 block">快速模板</Label>
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  variant="outline"
-                  className="h-auto p-3 justify-start"
-                  onClick={() =>
-                    setPreviewData({
-                      url: "/images/yanyu-cloud-logo.png",
-                      title: "言语云企业管理系统",
-                      subtitle: "YanYu Cloud Enterprise Management",
-                      type: "default",
-                    })
-                  }
-                >
-                  <div className="text-left">
-                    <div className="font-medium text-sm">言语云模板</div>
-                    <div className="text-xs text-gray-500">默认企业标志</div>
-                  </div>
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="h-auto p-3 justify-start"
-                  onClick={() =>
-                    setPreviewData({
-                      url: "/images/zuoyou-logo.png",
-                      title: "左右科技有限公司",
-                      subtitle: "ZuoYou Technology Co., Ltd.",
-                      type: "default",
-                    })
-                  }
-                >
-                  <div className="text-left">
-                    <div className="font-medium text-sm">左右科技</div>
-                    <div className="text-xs text-gray-500">科技企业标志</div>
-                  </div>
-                </Button>
+              <div className="grid grid-cols-1 gap-3">
+                {templates.map((template, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className="h-auto p-4 justify-start hover:bg-blue-50 hover:border-blue-300 bg-transparent"
+                    onClick={() => handleTemplateSelect(template)}
+                  >
+                    <div className="flex items-center space-x-3 w-full">
+                      <img
+                        src={template.url || "/placeholder.svg"}
+                        alt={template.title}
+                        className="h-8 w-auto object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          target.src = "/placeholder.svg?height=32&width=100&text=Logo"
+                        }}
+                      />
+                      <div className="text-left flex-1">
+                        <div className="font-medium text-sm">{template.title}</div>
+                        <div className="text-xs text-gray-500">{template.subtitle}</div>
+                      </div>
+                    </div>
+                  </Button>
+                ))}
               </div>
             </div>
 
             {/* 操作按钮 */}
             <div className="flex justify-between pt-4 border-t">
-              <Button variant="outline" onClick={handleReset} className="text-red-600 hover:text-red-700">
+              <Button
+                variant="outline"
+                onClick={handleReset}
+                className="text-red-600 hover:text-red-700 bg-transparent"
+              >
                 <RotateCcw className="w-4 h-4 mr-2" />
                 恢复默认
               </Button>

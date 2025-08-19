@@ -1,5 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
+import { ResponsiveLayoutProvider } from "@/components/layout/responsive-layout"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
 }
 
 export default function RootLayout({
@@ -25,8 +27,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="zh-CN">
+      <body className="antialiased">
+        <ResponsiveLayoutProvider>{children}</ResponsiveLayoutProvider>
+      </body>
     </html>
   )
 }

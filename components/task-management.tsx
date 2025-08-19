@@ -1,24 +1,36 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Progress } from "@/components/ui/progress"
-import { CheckSquare, Plus, Search, Calendar, Clock, AlertCircle, CheckCircle } from "lucide-react"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import {
+  CheckSquare,
+  Plus,
+  Search,
+  Calendar,
+  User,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  Edit,
+  Trash2,
+  Eye,
+} from "lucide-react"
 
 interface Task {
   id: string
@@ -27,618 +39,419 @@ interface Task {
   status: "todo" | "in-progress" | "review" | "completed"
   priority: "low" | "medium" | "high" | "urgent"
   assignee: string
-  assigneeAvatar: string
   dueDate: string
   progress: number
   tags: string[]
   project: string
   createdAt: string
-  updatedAt: string
 }
 
-interface TeamMember {
-  id: string
-  name: string
-  role: string
-  avatar: string
-  tasks: number
-  completedTasks: number
-}
+const mockTasks: Task[] = [
+  {
+    id: "1",
+    title: "产品原型设计",
+    description: "完成新产品的原型设计和用户体验优化",
+    status: "in-progress",
+    priority: "high",
+    assignee: "张设计师",
+    dueDate: "2025-06-25",
+    progress: 65,
+    tags: ["设计", "原型", "UX"],
+    project: "新产品开发",
+    createdAt: "2025-06-15",
+  },
+  {
+    id: "2",
+    title: "数据库优化",
+    description: "优化数据库查询性能，提升系统响应速度",
+    status: "todo",
+    priority: "medium",
+    assignee: "李工程师",
+    dueDate: "2025-06-30",
+    progress: 0,
+    tags: ["技术", "优化", "数据库"],
+    project: "系统维护",
+    createdAt: "2025-06-18",
+  },
+  {
+    id: "3",
+    title: "市场调研报告",
+    description: "完成Q2季度市场调研报告的撰写和分析",
+    status: "completed",
+    priority: "medium",
+    assignee: "王分析师",
+    dueDate: "2025-06-20",
+    progress: 100,
+    tags: ["调研", "报告", "分析"],
+    project: "市场分析",
+    createdAt: "2025-06-10",
+  },
+  {
+    id: "4",
+    title: "客户需求分析",
+    description: "分析重点客户的需求变化和市场趋势",
+    status: "review",
+    priority: "high",
+    assignee: "陈经理",
+    dueDate: "2025-06-22",
+    progress: 90,
+    tags: ["客户", "分析", "需求"],
+    project: "客户服务",
+    createdAt: "2025-06-12",
+  },
+  {
+    id: "5",
+    title: "系统安全审计",
+    description: "进行全面的系统安全检查和漏洞修复",
+    status: "todo",
+    priority: "urgent",
+    assignee: "赵工程师",
+    dueDate: "2025-06-28",
+    progress: 0,
+    tags: ["安全", "审计", "修复"],
+    project: "系统维护",
+    createdAt: "2025-06-19",
+  },
+]
 
 export function TaskManagement() {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: "1",
-      title: "产品原型设计",
-      description: "完成新产品的原型设计和用户体验优化",
-      status: "in-progress",
-      priority: "high",
-      assignee: "张设计师",
-      assigneeAvatar: "/placeholder.svg?height=32&width=32",
-      dueDate: "2025-06-25",
-      progress: 65,
-      tags: ["设计", "原型"],
-      project: "新产品开发",
-      createdAt: "2025-06-15",
-      updatedAt: "2025-06-19",
-    },
-    {
-      id: "2",
-      title: "数据库优化",
-      description: "优化数据库查询性能，提升系统响应速度",
-      status: "todo",
-      priority: "medium",
-      assignee: "李工程师",
-      assigneeAvatar: "/placeholder.svg?height=32&width=32",
-      dueDate: "2025-06-30",
-      progress: 0,
-      tags: ["技术", "优化"],
-      project: "系统维护",
-      createdAt: "2025-06-18",
-      updatedAt: "2025-06-18",
-    },
-    {
-      id: "3",
-      title: "市场调研报告",
-      description: "完成Q2季度市场调研报告的撰写和分析",
-      status: "completed",
-      priority: "medium",
-      assignee: "王分析师",
-      assigneeAvatar: "/placeholder.svg?height=32&width=32",
-      dueDate: "2025-06-20",
-      progress: 100,
-      tags: ["调研", "报告"],
-      project: "市场分析",
-      createdAt: "2025-06-10",
-      updatedAt: "2025-06-19",
-    },
-    {
-      id: "4",
-      title: "客户需求分析",
-      description: "分析重点客户的需求变化和市场趋势",
-      status: "review",
-      priority: "high",
-      assignee: "陈经理",
-      assigneeAvatar: "/placeholder.svg?height=32&width=32",
-      dueDate: "2025-06-22",
-      progress: 90,
-      tags: ["客户", "分析"],
-      project: "客户服务",
-      createdAt: "2025-06-12",
-      updatedAt: "2025-06-19",
-    },
-  ])
-
-  const [teamMembers] = useState<TeamMember[]>([
-    {
-      id: "1",
-      name: "张设计师",
-      role: "UI/UX设计师",
-      avatar: "/placeholder.svg?height=40&width=40",
-      tasks: 5,
-      completedTasks: 3,
-    },
-    {
-      id: "2",
-      name: "李工程师",
-      role: "后端开发",
-      avatar: "/placeholder.svg?height=40&width=40",
-      tasks: 8,
-      completedTasks: 6,
-    },
-    {
-      id: "3",
-      name: "王分析师",
-      role: "数据分析师",
-      avatar: "/placeholder.svg?height=40&width=40",
-      tasks: 4,
-      completedTasks: 4,
-    },
-    {
-      id: "4",
-      name: "陈经理",
-      role: "项目经理",
-      avatar: "/placeholder.svg?height=40&width=40",
-      tasks: 6,
-      completedTasks: 4,
-    },
-  ])
-
-  const [selectedStatus, setSelectedStatus] = useState<string>("all")
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [tasks, setTasks] = useState<Task[]>(mockTasks)
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>(mockTasks)
   const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [priorityFilter, setPriorityFilter] = useState("all")
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "todo":
-        return <Badge className="bg-gray-100 text-gray-800">待开始</Badge>
-      case "in-progress":
-        return <Badge className="bg-blue-100 text-blue-800">进行中</Badge>
-      case "review":
-        return <Badge className="bg-yellow-100 text-yellow-800">待审核</Badge>
-      case "completed":
-        return <Badge className="bg-green-100 text-green-800">已完成</Badge>
-      default:
-        return <Badge variant="secondary">未知</Badge>
-    }
-  }
+  // 过滤任务
+  useEffect(() => {
+    let filtered = tasks
 
-  const getPriorityBadge = (priority: string) => {
-    switch (priority) {
-      case "urgent":
-        return <Badge variant="destructive">紧急</Badge>
-      case "high":
-        return <Badge className="bg-orange-100 text-orange-800">高优先级</Badge>
-      case "medium":
-        return <Badge variant="outline">中优先级</Badge>
-      case "low":
-        return <Badge variant="secondary">低优先级</Badge>
-      default:
-        return <Badge variant="secondary">普通</Badge>
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (task) =>
+          task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          task.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          task.assignee.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
     }
-  }
+
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((task) => task.status === statusFilter)
+    }
+
+    if (priorityFilter !== "all") {
+      filtered = filtered.filter((task) => task.priority === priorityFilter)
+    }
+
+    setFilteredTasks(filtered)
+  }, [tasks, searchTerm, statusFilter, priorityFilter])
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "todo":
-        return <Clock className="w-4 h-4" />
-      case "in-progress":
-        return <AlertCircle className="w-4 h-4" />
-      case "review":
-        return <CheckCircle className="w-4 h-4" />
       case "completed":
-        return <CheckCircle className="w-4 h-4" />
+        return <CheckCircle className="w-4 h-4 text-green-600" />
+      case "in-progress":
+        return <Clock className="w-4 h-4 text-blue-600" />
+      case "review":
+        return <Eye className="w-4 h-4 text-purple-600" />
+      case "todo":
+        return <CheckSquare className="w-4 h-4 text-gray-600" />
       default:
-        return <Clock className="w-4 h-4" />
+        return <CheckSquare className="w-4 h-4 text-gray-600" />
     }
   }
 
-  const filteredTasks = tasks.filter((task) => {
-    const matchesSearch =
-      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = selectedStatus === "all" || task.status === selectedStatus
-    return matchesSearch && matchesStatus
-  })
-
-  const taskStats = {
-    total: tasks.length,
-    todo: tasks.filter((t) => t.status === "todo").length,
-    inProgress: tasks.filter((t) => t.status === "in-progress").length,
-    review: tasks.filter((t) => t.status === "review").length,
-    completed: tasks.filter((t) => t.status === "completed").length,
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "已完成"
+      case "in-progress":
+        return "进行中"
+      case "review":
+        return "待审核"
+      case "todo":
+        return "待开始"
+      default:
+        return "未知"
+    }
   }
 
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "urgent":
+        return "bg-red-500"
+      case "high":
+        return "bg-orange-500"
+      case "medium":
+        return "bg-yellow-500"
+      case "low":
+        return "bg-green-500"
+      default:
+        return "bg-gray-500"
+    }
+  }
+
+  const getPriorityText = (priority: string) => {
+    switch (priority) {
+      case "urgent":
+        return "紧急"
+      case "high":
+        return "高"
+      case "medium":
+        return "中"
+      case "low":
+        return "低"
+      default:
+        return "未知"
+    }
+  }
+
+  const updateTaskStatus = (taskId: string, newStatus: Task["status"]) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === taskId
+          ? { ...task, status: newStatus, progress: newStatus === "completed" ? 100 : task.progress }
+          : task,
+      ),
+    )
+  }
+
+  const deleteTask = (taskId: string) => {
+    setTasks(tasks.filter((task) => task.id !== taskId))
+  }
+
+  const getTaskStats = () => {
+    const total = tasks.length
+    const completed = tasks.filter((t) => t.status === "completed").length
+    const inProgress = tasks.filter((t) => t.status === "in-progress").length
+    const overdue = tasks.filter((t) => new Date(t.dueDate) < new Date() && t.status !== "completed").length
+
+    return { total, completed, inProgress, overdue }
+  }
+
+  const stats = getTaskStats()
+
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">
+      {/* 页面标题 */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">任务管理看板</h1>
-          <p className="text-muted-foreground">高效的团队任务协作平台</p>
+          <h1 className="text-3xl font-bold text-slate-800">任务管理</h1>
+          <p className="text-slate-600 mt-1">管理和跟踪项目任务进度</p>
         </div>
-        <div className="flex space-x-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="搜索任务..."
-              className="pl-10 w-64"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700">
+              <Plus className="w-4 h-4 mr-2" />
+              新建任务
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>创建新任务</DialogTitle>
+              <DialogDescription>填写任务详细信息</DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="title" className="text-right">
+                  标题
+                </Label>
+                <Input id="title" className="col-span-3" placeholder="任务标题" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="description" className="text-right">
+                  描述
+                </Label>
+                <Textarea id="description" className="col-span-3" placeholder="任务描述" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="assignee" className="text-right">
+                  负责人
+                </Label>
+                <Input id="assignee" className="col-span-3" placeholder="负责人" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="dueDate" className="text-right">
+                  截止日期
+                </Label>
+                <Input id="dueDate" type="date" className="col-span-3" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">创建任务</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* 统计卡片 */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">总任务数</CardTitle>
+            <CheckSquare className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-800">{stats.total}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">已完成</CardTitle>
+            <CheckCircle className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-800">{stats.completed}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">进行中</CardTitle>
+            <Clock className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-800">{stats.inProgress}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">已逾期</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-800">{stats.overdue}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 搜索和过滤 */}
+      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                <Input
+                  placeholder="搜索任务标题、描述或负责人..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="状态筛选" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">所有状态</SelectItem>
+                <SelectItem value="todo">待开始</SelectItem>
+                <SelectItem value="in-progress">进行中</SelectItem>
+                <SelectItem value="review">待审核</SelectItem>
+                <SelectItem value="completed">已完成</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="优先级筛选" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">所有优先级</SelectItem>
+                <SelectItem value="urgent">紧急</SelectItem>
+                <SelectItem value="high">高</SelectItem>
+                <SelectItem value="medium">中</SelectItem>
+                <SelectItem value="low">低</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">全部状态</SelectItem>
-              <SelectItem value="todo">待开始</SelectItem>
-              <SelectItem value="in-progress">进行中</SelectItem>
-              <SelectItem value="review">待审核</SelectItem>
-              <SelectItem value="completed">已完成</SelectItem>
-            </SelectContent>
-          </Select>
-          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                创建任务
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>创建新任务</DialogTitle>
-                <DialogDescription>填写任务详细信息</DialogDescription>
-              </DialogHeader>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2 col-span-2">
-                  <Label htmlFor="title">任务标题</Label>
-                  <Input id="title" placeholder="请输入任务标题" />
-                </div>
-                <div className="space-y-2 col-span-2">
-                  <Label htmlFor="description">任务描述</Label>
-                  <Textarea id="description" placeholder="请输入任务描述" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="assignee">负责人</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="选择负责人" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {teamMembers.map((member) => (
-                        <SelectItem key={member.id} value={member.name}>
-                          {member.name} - {member.role}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="priority">优先级</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="选择优先级" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">低优先级</SelectItem>
-                      <SelectItem value="medium">中优先级</SelectItem>
-                      <SelectItem value="high">高优先级</SelectItem>
-                      <SelectItem value="urgent">紧急</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="dueDate">截止日期</Label>
-                  <Input id="dueDate" type="date" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="project">所属项目</Label>
-                  <Input id="project" placeholder="请输入项目名称" />
-                </div>
-              </div>
-              <div className="flex justify-end space-x-2 mt-4">
-                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-                  取消
-                </Button>
-                <Button onClick={() => setIsAddDialogOpen(false)}>创建任务</Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-      {/* 任务统计卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">总任务数</CardTitle>
-            <CheckSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{taskStats.total}</div>
-            <p className="text-xs text-muted-foreground">全部任务</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">待开始</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{taskStats.todo}</div>
-            <p className="text-xs text-muted-foreground">等待开始的任务</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">进行中</CardTitle>
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{taskStats.inProgress}</div>
-            <p className="text-xs text-muted-foreground">正在执行的任务</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">待审核</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{taskStats.review}</div>
-            <p className="text-xs text-muted-foreground">等待审核的任务</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">已完成</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{taskStats.completed}</div>
-            <p className="text-xs text-muted-foreground">已完成的任务</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* 任务看板和团队成员 */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>任务看板</CardTitle>
-              <CardDescription>拖拽任务卡片来更新状态</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* 待开始列 */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="w-4 h-4 text-gray-500" />
-                    <h3 className="font-medium">待开始</h3>
-                    <Badge variant="secondary">{taskStats.todo}</Badge>
+      {/* 任务列表 */}
+      <div className="grid grid-cols-1 gap-4">
+        {filteredTasks.map((task) => (
+          <Card
+            key={task.id}
+            className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-3 mb-2">
+                    {getStatusIcon(task.status)}
+                    <h3 className="text-lg font-semibold text-slate-800">{task.title}</h3>
+                    <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority)}`}></div>
+                    <Badge variant="outline" className="text-xs">
+                      {getPriorityText(task.priority)}
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      {getStatusText(task.status)}
+                    </Badge>
                   </div>
-                  <div className="space-y-2">
-                    {filteredTasks
-                      .filter((task) => task.status === "todo")
-                      .map((task) => (
-                        <Card key={task.id} className="p-3 hover:shadow-md transition-shadow cursor-pointer">
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-start">
-                              <h4 className="font-medium text-sm">{task.title}</h4>
-                              {getPriorityBadge(task.priority)}
-                            </div>
-                            <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-2">
-                                <Avatar className="w-6 h-6">
-                                  <AvatarImage src={task.assigneeAvatar || "/placeholder.svg"} />
-                                  <AvatarFallback>{task.assignee[0]}</AvatarFallback>
-                                </Avatar>
-                                <span className="text-xs">{task.assignee}</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <Calendar className="w-3 h-3 text-muted-foreground" />
-                                <span className="text-xs text-muted-foreground">{task.dueDate}</span>
-                              </div>
-                            </div>
-                            <div className="flex flex-wrap gap-1">
-                              {task.tags.map((tag) => (
-                                <Badge key={tag} variant="outline" className="text-xs">
-                                  {tag}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </Card>
-                      ))}
-                  </div>
-                </div>
-
-                {/* 进行中列 */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <AlertCircle className="w-4 h-4 text-blue-500" />
-                    <h3 className="font-medium">进行中</h3>
-                    <Badge variant="secondary">{taskStats.inProgress}</Badge>
-                  </div>
-                  <div className="space-y-2">
-                    {filteredTasks
-                      .filter((task) => task.status === "in-progress")
-                      .map((task) => (
-                        <Card key={task.id} className="p-3 hover:shadow-md transition-shadow cursor-pointer">
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-start">
-                              <h4 className="font-medium text-sm">{task.title}</h4>
-                              {getPriorityBadge(task.priority)}
-                            </div>
-                            <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
-                            <div className="space-y-1">
-                              <div className="flex justify-between text-xs">
-                                <span>进度</span>
-                                <span>{task.progress}%</span>
-                              </div>
-                              <Progress value={task.progress} className="h-2" />
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-2">
-                                <Avatar className="w-6 h-6">
-                                  <AvatarImage src={task.assigneeAvatar || "/placeholder.svg"} />
-                                  <AvatarFallback>{task.assignee[0]}</AvatarFallback>
-                                </Avatar>
-                                <span className="text-xs">{task.assignee}</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <Calendar className="w-3 h-3 text-muted-foreground" />
-                                <span className="text-xs text-muted-foreground">{task.dueDate}</span>
-                              </div>
-                            </div>
-                            <div className="flex flex-wrap gap-1">
-                              {task.tags.map((tag) => (
-                                <Badge key={tag} variant="outline" className="text-xs">
-                                  {tag}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </Card>
-                      ))}
-                  </div>
-                </div>
-
-                {/* 待审核列 */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="w-4 h-4 text-yellow-500" />
-                    <h3 className="font-medium">待审核</h3>
-                    <Badge variant="secondary">{taskStats.review}</Badge>
-                  </div>
-                  <div className="space-y-2">
-                    {filteredTasks
-                      .filter((task) => task.status === "review")
-                      .map((task) => (
-                        <Card key={task.id} className="p-3 hover:shadow-md transition-shadow cursor-pointer">
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-start">
-                              <h4 className="font-medium text-sm">{task.title}</h4>
-                              {getPriorityBadge(task.priority)}
-                            </div>
-                            <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
-                            <div className="space-y-1">
-                              <div className="flex justify-between text-xs">
-                                <span>进度</span>
-                                <span>{task.progress}%</span>
-                              </div>
-                              <Progress value={task.progress} className="h-2" />
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-2">
-                                <Avatar className="w-6 h-6">
-                                  <AvatarImage src={task.assigneeAvatar || "/placeholder.svg"} />
-                                  <AvatarFallback>{task.assignee[0]}</AvatarFallback>
-                                </Avatar>
-                                <span className="text-xs">{task.assignee}</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <Calendar className="w-3 h-3 text-muted-foreground" />
-                                <span className="text-xs text-muted-foreground">{task.dueDate}</span>
-                              </div>
-                            </div>
-                            <div className="flex flex-wrap gap-1">
-                              {task.tags.map((tag) => (
-                                <Badge key={tag} variant="outline" className="text-xs">
-                                  {tag}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </Card>
-                      ))}
-                  </div>
-                </div>
-
-                {/* 已完成列 */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <h3 className="font-medium">已完成</h3>
-                    <Badge variant="secondary">{taskStats.completed}</Badge>
-                  </div>
-                  <div className="space-y-2">
-                    {filteredTasks
-                      .filter((task) => task.status === "completed")
-                      .map((task) => (
-                        <Card key={task.id} className="p-3 hover:shadow-md transition-shadow cursor-pointer opacity-75">
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-start">
-                              <h4 className="font-medium text-sm">{task.title}</h4>
-                              {getPriorityBadge(task.priority)}
-                            </div>
-                            <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-2">
-                                <Avatar className="w-6 h-6">
-                                  <AvatarImage src={task.assigneeAvatar || "/placeholder.svg"} />
-                                  <AvatarFallback>{task.assignee[0]}</AvatarFallback>
-                                </Avatar>
-                                <span className="text-xs">{task.assignee}</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <CheckCircle className="w-3 h-3 text-green-500" />
-                                <span className="text-xs text-green-600">已完成</span>
-                              </div>
-                            </div>
-                            <div className="flex flex-wrap gap-1">
-                              {task.tags.map((tag) => (
-                                <Badge key={tag} variant="outline" className="text-xs">
-                                  {tag}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </Card>
-                      ))}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* 团队成员分工 */}
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle>团队成员</CardTitle>
-              <CardDescription>成员分工情况</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {teamMembers.map((member) => (
-                  <div key={member.id} className="flex items-center space-x-3 p-3 border rounded-lg">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage src={member.avatar || "/placeholder.svg"} />
-                      <AvatarFallback>{member.name[0]}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm">{member.name}</h4>
-                      <p className="text-xs text-muted-foreground">{member.role}</p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <span className="text-xs">任务: {member.tasks}</span>
-                        <span className="text-xs text-green-600">完成: {member.completedTasks}</span>
-                      </div>
-                      <Progress value={(member.completedTasks / member.tasks) * 100} className="h-1 mt-1" />
+                  <p className="text-slate-600 mb-3">{task.description}</p>
+                  <div className="flex items-center space-x-6 text-sm text-slate-500">
+                    <div className="flex items-center space-x-1">
+                      <User className="w-4 h-4" />
+                      <span>{task.assignee}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>{task.dueDate}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <CheckSquare className="w-4 h-4" />
+                      <span>{task.project}</span>
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>项目进度</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>新产品开发</span>
-                    <span>75%</span>
+                  <div className="mt-3">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-slate-600">进度</span>
+                      <span className="font-medium">{task.progress}%</span>
+                    </div>
+                    <Progress value={task.progress} className="h-2" />
                   </div>
-                  <Progress value={75} className="h-2" />
+                  <div className="flex flex-wrap gap-1 mt-3">
+                    {task.tags.map((tag, index) => (
+                      <Badge key={index} variant="outline" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>系统维护</span>
-                    <span>45%</span>
-                  </div>
-                  <Progress value={45} className="h-2" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>市场分析</span>
-                    <span>100%</span>
-                  </div>
-                  <Progress value={100} className="h-2" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>客户服务</span>
-                    <span>90%</span>
-                  </div>
-                  <Progress value={90} className="h-2" />
+                <div className="flex items-center space-x-2 ml-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => updateTaskStatus(task.id, task.status === "completed" ? "in-progress" : "completed")}
+                  >
+                    {task.status === "completed" ? "重新开始" : "标记完成"}
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => deleteTask(task.id)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
-        </div>
+        ))}
       </div>
+
+      {filteredTasks.length === 0 && (
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardContent className="p-12 text-center">
+            <CheckSquare className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-slate-600 mb-2">没有找到任务</h3>
+            <p className="text-slate-500">尝试调整搜索条件或创建新任务</p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

@@ -1,238 +1,350 @@
+"use client"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Code, Database, FileText, Zap } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Code, Database, FileText, Settings, Info, Copy } from "lucide-react"
 
-export default function ApiDocumentationPage() {
-  return (
-    <div className="p-6 space-y-6 max-w-4xl mx-auto">
-      <div className="text-center space-y-4">
-        <div className="flex justify-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center">
-            <Code className="w-8 h-8 text-white" />
-          </div>
-        </div>
-        <div>
-          <h1 className="text-4xl font-bold text-gray-900">API 文档</h1>
-          <p className="text-xl text-gray-600 mt-2">本地化数据库API接口文档</p>
-        </div>
-        <div className="flex justify-center space-x-4">
-          <Badge className="bg-green-100 text-green-800">RESTful API</Badge>
-          <Badge className="bg-blue-100 text-blue-800">TypeScript</Badge>
-          <Badge className="bg-purple-100 text-purple-800">本地化</Badge>
-        </div>
-      </div>
+export default function APIDocumentationPage() {
+  const apiEndpoints = [
+    {
+      method: "GET",
+      path: "/api/customers",
+      description: "获取客户列表",
+      category: "customers",
+      params: ["page", "limit", "search"],
+      response: "Customer[]",
+    },
+    {
+      method: "POST",
+      path: "/api/customers",
+      description: "创建新客户",
+      category: "customers",
+      body: "CreateCustomerRequest",
+      response: "Customer",
+    },
+    {
+      method: "GET",
+      path: "/api/tasks",
+      description: "获取任务列表",
+      category: "tasks",
+      params: ["status", "assignee", "project"],
+      response: "Task[]",
+    },
+    {
+      method: "PUT",
+      path: "/api/tasks/:id",
+      description: "更新任务状态",
+      category: "tasks",
+      body: "UpdateTaskRequest",
+      response: "Task",
+    },
+    {
+      method: "GET",
+      path: "/api/okrs",
+      description: "获取OKR列表",
+      category: "okrs",
+      params: ["quarter", "owner", "department"],
+      response: "OKR[]",
+    },
+    {
+      method: "POST",
+      path: "/api/notifications",
+      description: "发送通知",
+      category: "notifications",
+      body: "CreateNotificationRequest",
+      response: "Notification",
+    },
+  ]
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Database className="w-5 h-5" />
-              <span>数据库操作API</span>
-            </CardTitle>
-            <CardDescription>本地IndexedDB数据库的CRUD操作接口</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <code className="text-sm font-mono">localDB.create()</code>
-                  <Badge variant="outline">POST</Badge>
-                </div>
-                <p className="text-sm text-gray-600">创建新的数据记录</p>
-              </div>
-              <div className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <code className="text-sm font-mono">localDB.read()</code>
-                  <Badge variant="outline">GET</Badge>
-                </div>
-                <p className="text-sm text-gray-600">读取指定ID的数据记录</p>
-              </div>
-              <div className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <code className="text-sm font-mono">localDB.update()</code>
-                  <Badge variant="outline">PUT</Badge>
-                </div>
-                <p className="text-sm text-gray-600">更新现有数据记录</p>
-              </div>
-              <div className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <code className="text-sm font-mono">localDB.delete()</code>
-                  <Badge variant="outline">DELETE</Badge>
-                </div>
-                <p className="text-sm text-gray-600">删除指定的数据记录</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <FileText className="w-5 h-5" />
-              <span>查询和搜索API</span>
-            </CardTitle>
-            <CardDescription>数据查询、搜索和统计接口</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <code className="text-sm font-mono">localDB.list()</code>
-                  <Badge variant="outline">GET</Badge>
-                </div>
-                <p className="text-sm text-gray-600">获取数据列表，支持分页和排序</p>
-              </div>
-              <div className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <code className="text-sm font-mono">localDB.search()</code>
-                  <Badge variant="outline">GET</Badge>
-                </div>
-                <p className="text-sm text-gray-600">全文搜索数据记录</p>
-              </div>
-              <div className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <code className="text-sm font-mono">localDB.count()</code>
-                  <Badge variant="outline">GET</Badge>
-                </div>
-                <p className="text-sm text-gray-600">统计数据记录数量</p>
-              </div>
-              <div className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <code className="text-sm font-mono">localDB.backup()</code>
-                  <Badge variant="outline">GET</Badge>
-                </div>
-                <p className="text-sm text-gray-600">导出完整数据备份</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Zap className="w-5 h-5" />
-            <span>使用示例</span>
-          </CardTitle>
-          <CardDescription>常用API调用示例代码</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div>
-              <h4 className="font-medium mb-2">创建客户记录</h4>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <pre className="text-sm text-gray-700">
-                  {`// 创建新客户
-const customerId = await localDB.create('customers', {
-  name: '张总',
-  company: '华润集团',
-  email: 'zhang@huarun.com',
-  phone: '138-0000-1234',
-  status: 'active'
-});
-
-console.log('客户创建成功，ID:', customerId);`}
-                </pre>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-medium mb-2">查询客户列表</h4>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <pre className="text-sm text-gray-700">
-                  {`// 获取活跃客户列表
-const activeCustomers = await localDB.list('customers', {
-  index: 'status',
-  range: IDBKeyRange.only('active'),
-  limit: 10,
-  offset: 0
-});
-
-console.log('活跃客户:', activeCustomers);`}
-                </pre>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-medium mb-2">搜索功能</h4>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <pre className="text-sm text-gray-700">
-                  {`// 搜索客户
-const searchResults = await localDB.search('customers', '华润', [
-  'name', 'company', 'email'
-]);
-
-console.log('搜索结果:', searchResults);`}
-                </pre>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-medium mb-2">数据备份</h4>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <pre className="text-sm text-gray-700">
-                  {`// 导出数据备份
-const backupData = await localDB.backup();
-
-// 下载备份文件
-const blob = new Blob([JSON.stringify(backupData, null, 2)], {
-  type: 'application/json'
-});
-const url = URL.createObjectURL(blob);
-const link = document.createElement('a');
-link.href = url;
-link.download = 'database-backup.json';
-link.click();`}
-                </pre>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>错误处理</CardTitle>
-          <CardDescription>API错误处理和异常情况说明</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="border rounded-lg p-4">
-              <h4 className="font-medium mb-2">常见错误类型</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li>
-                  <code>DatabaseNotInitialized</code> - 数据库未初始化
-                </li>
-                <li>
-                  <code>RecordNotFound</code> - 记录不存在
-                </li>
-                <li>
-                  <code>ValidationError</code> - 数据验证失败
-                </li>
-                <li>
-                  <code>StorageQuotaExceeded</code> - 存储空间不足
-                </li>
-              </ul>
-            </div>
-            <div className="border rounded-lg p-4">
-              <h4 className="font-medium mb-2">错误处理示例</h4>
-              <div className="bg-gray-50 p-3 rounded">
-                <pre className="text-sm text-gray-700">
-                  {`try {
-  const customer = await localDB.read('customers', 'invalid-id');
-} catch (error) {
-  if (error.message === '数据不存在') {
-    console.log('客户记录未找到');
-  } else {
-    console.error('查询失败:', error);
+  const dataModels = {
+    Customer: {
+      id: "string",
+      name: "string",
+      company: "string",
+      email: "string",
+      phone: "string",
+      status: "'active' | 'inactive' | 'potential'",
+      value: "number",
+      createdAt: "string",
+      updatedAt: "string",
+    },
+    Task: {
+      id: "string",
+      title: "string",
+      description: "string",
+      status: "'todo' | 'in-progress' | 'review' | 'completed'",
+      priority: "'low' | 'medium' | 'high' | 'urgent'",
+      assignee: "string",
+      dueDate: "string",
+      progress: "number",
+      createdAt: "string",
+    },
+    OKR: {
+      id: "string",
+      title: "string",
+      description: "string",
+      owner: "string",
+      quarter: "string",
+      progress: "number",
+      keyResults: "KeyResult[]",
+      status: "'draft' | 'active' | 'completed'",
+    },
   }
-}`}
-                </pre>
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+  }
+
+  return (
+    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+      {/* 页面标题 */}
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">API 文档</h1>
+        <p className="text-xl text-gray-600 mb-4">言语云企业管理系统 API 接口文档</p>
+        <div className="flex items-center justify-center space-x-4">
+          <Badge className="bg-green-100 text-green-800">REST API</Badge>
+          <Badge className="bg-blue-100 text-blue-800">JSON</Badge>
+          <Badge className="bg-purple-100 text-purple-800">TypeScript</Badge>
+        </div>
+      </div>
+
+      <Tabs defaultValue="endpoints" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="endpoints">API 端点</TabsTrigger>
+          <TabsTrigger value="models">数据模型</TabsTrigger>
+          <TabsTrigger value="examples">代码示例</TabsTrigger>
+          <TabsTrigger value="authentication">认证授权</TabsTrigger>
+        </TabsList>
+
+        {/* API 端点 */}
+        <TabsContent value="endpoints" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Code className="w-5 h-5" />
+                <span>API 端点列表</span>
+              </CardTitle>
+              <CardDescription>系统提供的所有 API 接口</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {apiEndpoints.map((endpoint, index) => (
+                  <div key={index} className="border rounded-lg p-4 hover:bg-gray-50">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-3">
+                        <Badge
+                          className={
+                            endpoint.method === "GET"
+                              ? "bg-green-100 text-green-800"
+                              : endpoint.method === "POST"
+                                ? "bg-blue-100 text-blue-800"
+                                : endpoint.method === "PUT"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-red-100 text-red-800"
+                          }
+                        >
+                          {endpoint.method}
+                        </Badge>
+                        <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">{endpoint.path}</code>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => copyToClipboard(endpoint.path)}>
+                        <Copy className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">{endpoint.description}</p>
+                    <div className="flex items-center space-x-4 text-xs">
+                      {endpoint.params && (
+                        <div>
+                          <span className="text-gray-500">参数: </span>
+                          <span className="font-mono">{endpoint.params.join(", ")}</span>
+                        </div>
+                      )}
+                      {endpoint.body && (
+                        <div>
+                          <span className="text-gray-500">请求体: </span>
+                          <span className="font-mono">{endpoint.body}</span>
+                        </div>
+                      )}
+                      <div>
+                        <span className="text-gray-500">响应: </span>
+                        <span className="font-mono">{endpoint.response}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* 数据模型 */}
+        <TabsContent value="models" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Database className="w-5 h-5" />
+                <span>数据模型定义</span>
+              </CardTitle>
+              <CardDescription>系统中使用的数据结构定义</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {Object.entries(dataModels).map(([modelName, fields]) => (
+                  <div key={modelName} className="border rounded-lg p-4">
+                    <h4 className="font-medium text-lg mb-3">{modelName}</h4>
+                    <div className="bg-gray-50 p-4 rounded">
+                      <pre className="text-sm">
+                        <code>
+                          {`interface ${modelName} {\n${Object.entries(fields)
+                            .map(([key, type]) => `  ${key}: ${type}`)
+                            .join("\n")}\n}`}
+                        </code>
+                      </pre>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* 代码示例 */}
+        <TabsContent value="examples" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <FileText className="w-5 h-5" />
+                <span>使用示例</span>
+              </CardTitle>
+              <CardDescription>常见 API 调用示例</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-medium mb-3">获取客户列表</h4>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <pre className="text-sm">
+                      <code>{`// 使用 fetch API
+const response = await fetch('/api/customers?page=1&limit=10')
+const customers = await response.json()
+
+// 使用 axios
+import axios from 'axios'
+const { data: customers } = await axios.get('/api/customers', {
+  params: { page: 1, limit: 10 }
+})`}</code>
+                    </pre>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium mb-3">创建新客户</h4>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <pre className="text-sm">
+                      <code>{`const newCustomer = {
+  name: "张三",
+  company: "科技有限公司",
+  email: "zhang@example.com",
+  phone: "138-0000-0000",
+  status: "potential"
+}
+
+const response = await fetch('/api/customers', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(newCustomer)
+})
+
+const customer = await response.json()`}</code>
+                    </pre>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium mb-3">更新任务状态</h4>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <pre className="text-sm">
+                      <code>{`const taskId = "task_123"
+const updateData = {
+  status: "completed",
+  progress: 100
+}
+
+const response = await fetch(\`/api/tasks/\${taskId}\`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(updateData)
+})
+
+const updatedTask = await response.json()`}</code>
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* 认证授权 */}
+        <TabsContent value="authentication" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Settings className="w-5 h-5" />
+                <span>认证与授权</span>
+              </CardTitle>
+              <CardDescription>API 访问控制和安全机制</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    本系统采用本地化存储，无需传统的 API 认证。所有数据操作都在客户端完成。
+                  </AlertDescription>
+                </Alert>
+
+                <div>
+                  <h4 className="font-medium mb-3">权限控制</h4>
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <ul className="text-sm text-blue-700 space-y-1">
+                      <li>• 基于角色的访问控制 (RBAC)</li>
+                      <li>• 数据级别的权限过滤</li>
+                      <li>• 操作日志记录和审计</li>
+                      <li>• 会话管理和超时控制</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium mb-3">安全最佳实践</h4>
+                  <div className="space-y-3">
+                    <div className="bg-green-50 p-3 rounded">
+                      <h5 className="font-medium text-green-800">数据验证</h5>
+                      <p className="text-sm text-green-700">所有输入数据都经过严格的类型检查和格式验证</p>
+                    </div>
+                    <div className="bg-yellow-50 p-3 rounded">
+                      <h5 className="font-medium text-yellow-800">错误处理</h5>
+                      <p className="text-sm text-yellow-700">统一的错误响应格式，不暴露敏感信息</p>
+                    </div>
+                    <div className="bg-purple-50 p-3 rounded">
+                      <h5 className="font-medium text-purple-800">日志记录</h5>
+                      <p className="text-sm text-purple-700">完整的操作日志，支持审计和问题追踪</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

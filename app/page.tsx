@@ -6,16 +6,15 @@ import { Sidebar } from "@/components/sidebar"
 import { MobileLayout } from "@/components/mobile/mobile-layout"
 import { MobileDashboard } from "@/components/mobile/mobile-dashboard"
 import { SystemInitializer } from "@/components/system-initializer"
-import { AutomatedTestRunner } from "@/components/automated-test-runner"
 import { MobileDetectionService } from "@/lib/mobile-detection"
 import { mobileNotificationService } from "@/lib/mobile-notifications"
 import { QuickActionHandler } from "@/components/quick-action-handler"
 import { setupDefaultActions } from "@/lib/action-manager"
 
 // 导入各个模块组件
-import { DashboardModule } from "@/components/dashboard-module"
-import { CustomerModule } from "@/components/customer-module"
-import { TaskModule } from "@/components/task-module"
+import { DashboardContent } from "@/components/dashboard-content"
+import { TaskManagement } from "@/components/task-management"
+import { CustomerManagement } from "@/components/customer-management"
 import { FinanceModule } from "@/components/finance-module"
 import { OKRModule } from "@/components/okr-module"
 import { ApprovalModule } from "@/components/approval-module"
@@ -24,12 +23,14 @@ import { KPIModule } from "@/components/kpi-module"
 import { AnalyticsModule } from "@/components/analytics-module"
 import { AIAnalysisModule } from "@/components/ai-analysis-module"
 import { IntegrationModule } from "@/components/integration-module"
+import { NotificationCenter } from "@/components/notification-center"
 
 export default function HomePage() {
   const [activeModule, setActiveModule] = useState("dashboard")
   const [isInitialized, setIsInitialized] = useState(false)
   const [initError, setInitError] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   // 初始化操作管理器
   useEffect(() => {
@@ -106,11 +107,11 @@ export default function HomePage() {
 
     switch (activeModule) {
       case "dashboard":
-        return <DashboardModule />
+        return <DashboardContent />
       case "customers":
-        return <CustomerModule />
+        return <CustomerManagement />
       case "tasks":
-        return <TaskModule />
+        return <TaskManagement />
       case "finance":
         return <FinanceModule />
       case "okr":
@@ -127,8 +128,10 @@ export default function HomePage() {
         return <AIAnalysisModule />
       case "integrations":
         return <IntegrationModule />
+      case "notifications":
+        return <NotificationCenter />
       default:
-        return isMobile ? <MobileDashboard /> : <DashboardModule />
+        return isMobile ? <MobileDashboard /> : <DashboardContent />
     }
   }
 
@@ -140,11 +143,11 @@ export default function HomePage() {
   // 如果初始化失败，显示错误界面
   if (initError) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full mx-4">
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+        <div className="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 border border-red-100">
           <div className="text-center">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-20 h-20 bg-gradient-to-br from-red-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -153,13 +156,13 @@ export default function HomePage() {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">系统初始化失败</h2>
-            <p className="text-gray-600 mb-6">{initError}</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">系统初始化失败</h2>
+            <p className="text-gray-600 mb-8 leading-relaxed">{initError}</p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-8 py-3 rounded-xl hover:from-red-600 hover:to-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-medium"
             >
-              重新加载
+              重新加载系统
             </button>
           </div>
         </div>
@@ -170,57 +173,46 @@ export default function HomePage() {
   // 移动端布局
   if (isMobile) {
     return (
-      <MobileLayout activeModule={activeModule} setActiveModule={setActiveModule}>
-        <QuickActionHandler
-          onActionComplete={(action, data) => {
-            console.log(`移动端快速操作完成: ${action}`, data)
-          }}
-        />
-        {renderActiveModule()}
-      </MobileLayout>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <MobileLayout activeModule={activeModule} setActiveModule={setActiveModule}>
+          <QuickActionHandler
+            onActionComplete={(action, data) => {
+              console.log(`移动端快速操作完成: ${action}`, data)
+            }}
+          />
+          {renderActiveModule()}
+        </MobileLayout>
+      </div>
     )
   }
 
-  // 桌面端布局
+  // 桌面端布局 - 只有一套导航系统
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-blue-50">
-      {/* 自动化测试运行器 */}
-      <AutomatedTestRunner />
-
-      {/* 快速操作处理器 */}
-      <QuickActionHandler
-        onActionComplete={(action, data) => {
-          console.log(`桌面端快速操作完成: ${action}`, data)
-
-          // 根据操作类型提供用户反馈
-          switch (action) {
-            case "schedule":
-              console.log("日程创建成功:", data)
-              break
-            case "profile":
-              console.log("个人资料更新成功:", data)
-              break
-            case "settings":
-              console.log("系统设置保存成功:", data)
-              break
-          }
-        }}
-      />
-
-      <div className="flex h-screen">
-        {/* 侧边栏 */}
+    <div className="flex h-screen bg-slate-50">
+      {/* 侧边栏 - 只渲染一次 */}
+      <div className={`${sidebarOpen ? "block" : "hidden"} lg:block fixed lg:relative z-30 h-full`}>
         <Sidebar activeModule={activeModule} setActiveModule={setActiveModule} />
+      </div>
 
-        {/* 主内容区域 */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* 顶部导航 */}
-          <Header />
+      {/* 移动端遮罩 */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
 
-          {/* 主要内容 */}
-          <main className="flex-1 overflow-y-auto bg-gradient-to-br from-sky-50 to-blue-50">
-            <div className="container mx-auto px-4 py-6">{renderActiveModule()}</div>
-          </main>
-        </div>
+      {/* 主内容区域 */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* 头部 - 只渲染一次 */}
+        <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+
+        {/* 主内容 */}
+        <main className="flex-1 overflow-y-auto">
+          <QuickActionHandler
+            onActionComplete={(action, data) => {
+              console.log(`快速操作完成: ${action}`, data)
+            }}
+          />
+          {renderActiveModule()}
+        </main>
       </div>
     </div>
   )

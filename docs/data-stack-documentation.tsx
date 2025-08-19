@@ -2,224 +2,102 @@
 
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
+  Code,
   Database,
   Server,
-  Cloud,
   Shield,
   Zap,
-  Code,
-  GitBranch,
   Monitor,
-  Layers,
-  Network,
-  FileText,
-  Settings,
-  BarChart3,
-  Lock,
   Globe,
-  Download,
-  ExternalLink,
+  GitBranch,
+  Package,
+  Settings,
+  TrendingUp,
   CheckCircle,
   AlertTriangle,
   Info,
-  Lightbulb,
-  Calendar,
-  Users,
+  Download,
+  ExternalLink,
+  Layers,
+  Lock,
+  Cloud,
 } from "lucide-react"
 
 export function DataStackDocumentation() {
   const [activeTab, setActiveTab] = useState("overview")
 
+  // 技术栈数据
   const techStack = {
-    frontend: [
-      { name: "Next.js 14", version: "14.0+", description: "React全栈框架，支持SSR/SSG", status: "stable" },
-      { name: "React 18", version: "18.0+", description: "用户界面构建库", status: "stable" },
-      { name: "TypeScript", version: "5.0+", description: "类型安全的JavaScript", status: "stable" },
-      { name: "Tailwind CSS", version: "3.4+", description: "原子化CSS框架", status: "stable" },
-      { name: "shadcn/ui", version: "latest", description: "现代化UI组件库", status: "stable" },
-      { name: "Lucide React", version: "latest", description: "图标库", status: "stable" },
-    ],
-    backend: [
-      { name: "Node.js", version: "18.0+", description: "JavaScript运行时环境", status: "stable" },
-      { name: "IndexedDB", version: "native", description: "浏览器本地数据库", status: "stable" },
-      { name: "Service Worker", version: "native", description: "离线支持和缓存", status: "stable" },
-      { name: "Web Workers", version: "native", description: "后台数据处理", status: "experimental" },
-    ],
-    database: [
-      { name: "IndexedDB", version: "native", description: "主要本地存储", status: "stable" },
-      { name: "LocalStorage", version: "native", description: "配置和缓存", status: "stable" },
-      { name: "SessionStorage", version: "native", description: "会话数据", status: "stable" },
-      { name: "Cache API", version: "native", description: "资源缓存", status: "stable" },
-    ],
-    tools: [
-      { name: "ESLint", version: "8.0+", description: "代码质量检查", status: "stable" },
-      { name: "Prettier", version: "3.0+", description: "代码格式化", status: "stable" },
-      { name: "Husky", version: "8.0+", description: "Git钩子管理", status: "stable" },
-      { name: "Vercel", version: "latest", description: "部署和托管平台", status: "stable" },
-    ],
+    frontend: {
+      framework: "Next.js 14",
+      language: "TypeScript",
+      styling: "Tailwind CSS",
+      components: "shadcn/ui",
+      icons: "Lucide React",
+      state: "React Hooks",
+      routing: "App Router",
+    },
+    backend: {
+      runtime: "Node.js",
+      api: "Next.js API Routes",
+      validation: "Zod",
+      auth: "NextAuth.js",
+      middleware: "Next.js Middleware",
+    },
+    database: {
+      primary: "IndexedDB",
+      orm: "原生 IndexedDB API",
+      cache: "浏览器缓存",
+      storage: "LocalStorage",
+      sync: "Background Sync",
+    },
+    tools: {
+      bundler: "Webpack",
+      compiler: "SWC",
+      linter: "ESLint",
+      formatter: "Prettier",
+      testing: "Jest + Testing Library",
+      deployment: "Vercel",
+    },
   }
 
-  const architectureLayers = [
-    {
-      name: "表现层 (Presentation Layer)",
-      description: "用户界面和交互逻辑",
-      technologies: ["React", "Next.js", "Tailwind CSS", "shadcn/ui"],
-      responsibilities: ["用户界面渲染", "用户交互处理", "状态管理", "路由导航"],
-      color: "bg-blue-100 text-blue-800",
-    },
-    {
-      name: "业务逻辑层 (Business Logic Layer)",
-      description: "核心业务逻辑和数据处理",
-      technologies: ["TypeScript", "Custom Hooks", "Context API"],
-      responsibilities: ["业务规则实现", "数据验证", "工作流管理", "权限控制"],
-      color: "bg-green-100 text-green-800",
-    },
-    {
-      name: "数据访问层 (Data Access Layer)",
-      description: "数据存储和访问抽象",
-      technologies: ["IndexedDB API", "Local Database Service"],
-      responsibilities: ["数据CRUD操作", "查询优化", "事务管理", "数据同步"],
-      color: "bg-yellow-100 text-yellow-800",
-    },
-    {
-      name: "存储层 (Storage Layer)",
-      description: "本地化数据存储",
-      technologies: ["IndexedDB", "LocalStorage", "Cache API"],
-      responsibilities: ["数据持久化", "离线存储", "缓存管理", "备份恢复"],
-      color: "bg-purple-100 text-purple-800",
-    },
-  ]
+  // 性能指标
+  const performanceMetrics = {
+    loadTime: 1.2,
+    firstPaint: 0.8,
+    interactive: 1.5,
+    dbQuery: 0.05,
+    bundleSize: 245,
+    lighthouse: 95,
+  }
 
-  const dataFlow = [
-    {
-      step: 1,
-      title: "用户交互",
-      description: "用户在界面上执行操作",
-      component: "React组件",
-      action: "触发事件处理器",
-    },
-    {
-      step: 2,
-      title: "业务逻辑处理",
-      description: "验证输入并执行业务规则",
-      component: "Custom Hooks",
-      action: "数据验证和转换",
-    },
-    {
-      step: 3,
-      title: "数据访问",
-      description: "通过数据访问层操作数据",
-      component: "Database Service",
-      action: "执行CRUD操作",
-    },
-    {
-      step: 4,
-      title: "本地存储",
-      description: "数据持久化到本地数据库",
-      component: "IndexedDB",
-      action: "数据写入/读取",
-    },
-    {
-      step: 5,
-      title: "状态更新",
-      description: "更新应用状态并重新渲染",
-      component: "React State",
-      action: "触发重新渲染",
-    },
-  ]
-
-  const performanceMetrics = [
-    { metric: "首屏加载时间", target: "< 2秒", current: "1.8秒", status: "good" },
-    { metric: "数据库查询响应", target: "< 100ms", current: "45ms", status: "excellent" },
-    { metric: "离线可用性", target: "100%", current: "100%", status: "excellent" },
-    { metric: "数据同步延迟", target: "< 500ms", current: "200ms", status: "good" },
-    { metric: "内存使用", target: "< 100MB", current: "65MB", status: "good" },
-    { metric: "存储空间效率", target: "> 80%", current: "92%", status: "excellent" },
-  ]
-
+  // 安全特性
   const securityFeatures = [
-    {
-      feature: "本地数据加密",
-      description: "敏感数据在本地存储时进行加密",
-      implementation: "AES-256加密算法",
-      status: "implemented",
-    },
-    {
-      feature: "访问权限控制",
-      description: "基于角色的访问控制系统",
-      implementation: "RBAC权限模型",
-      status: "implemented",
-    },
-    {
-      feature: "数据完整性验证",
-      description: "确保数据在传输和存储过程中的完整性",
-      implementation: "校验和验证",
-      status: "implemented",
-    },
-    {
-      feature: "审计日志",
-      description: "记录所有数据操作的详细日志",
-      implementation: "活动日志系统",
-      status: "implemented",
-    },
-    {
-      feature: "备份加密",
-      description: "数据备份文件的加密保护",
-      implementation: "端到端加密",
-      status: "planned",
-    },
+    { name: "数据加密", status: "implemented", description: "本地数据AES-256加密" },
+    { name: "权限控制", status: "implemented", description: "基于角色的访问控制" },
+    { name: "审计日志", status: "implemented", description: "完整的操作日志记录" },
+    { name: "输入验证", status: "implemented", description: "前后端双重验证" },
+    { name: "CSRF防护", status: "implemented", description: "跨站请求伪造防护" },
+    { name: "XSS防护", status: "implemented", description: "跨站脚本攻击防护" },
   ]
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "stable":
-        return "bg-green-100 text-green-800"
-      case "experimental":
-        return "bg-yellow-100 text-yellow-800"
-      case "deprecated":
-        return "bg-red-100 text-red-800"
-      default:
-        return "bg-gray-100 text-gray-800"
-    }
-  }
-
-  const getPerformanceColor = (status: string) => {
-    switch (status) {
-      case "excellent":
-        return "text-green-600"
-      case "good":
-        return "text-blue-600"
-      case "warning":
-        return "text-yellow-600"
-      case "poor":
-        return "text-red-600"
-      default:
-        return "text-gray-600"
-    }
-  }
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      {/* 头部 */}
-      <div className="text-center space-y-4">
-        <div className="flex justify-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-            <Database className="w-8 h-8 text-white" />
-          </div>
-        </div>
-        <div>
-          <h1 className="text-4xl font-bold text-gray-900">数据路技术栈文档</h1>
-          <p className="text-xl text-gray-600 mt-2">言语云企业管理系统技术架构详解</p>
-        </div>
-        <div className="flex justify-center space-x-4">
-          <Badge className="bg-blue-100 text-blue-800">版本 1.0.0</Badge>
-          <Badge className="bg-green-100 text-green-800">生产就绪</Badge>
-          <Badge className="bg-purple-100 text-purple-800">本地化优先</Badge>
+      {/* 页面标题 */}
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">数据路技术栈文档</h1>
+        <p className="text-xl text-gray-600 mb-4">言语云企业管理系统技术架构详解</p>
+        <div className="flex items-center justify-center space-x-4">
+          <Badge className="bg-blue-100 text-blue-800">Next.js 14</Badge>
+          <Badge className="bg-green-100 text-green-800">TypeScript</Badge>
+          <Badge className="bg-purple-100 text-purple-800">IndexedDB</Badge>
+          <Badge className="bg-orange-100 text-orange-800">PWA</Badge>
         </div>
       </div>
 
@@ -236,137 +114,129 @@ export function DataStackDocumentation() {
 
         {/* 技术概览 */}
         <TabsContent value="overview" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Code className="w-5 h-5" />
-                <span>技术栈总览</span>
-              </CardTitle>
-              <CardDescription>系统采用的核心技术和工具</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* 前端技术 */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Monitor className="w-5 h-5 mr-2" />
-                    前端技术栈
-                  </h3>
-                  <div className="space-y-3">
-                    {techStack.frontend.map((tech) => (
-                      <div key={tech.name} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">{tech.name}</div>
-                          <div className="text-sm text-gray-600">{tech.description}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm text-gray-500">{tech.version}</div>
-                          <Badge className={getStatusColor(tech.status)}>{tech.status}</Badge>
-                        </div>
-                      </div>
-                    ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Code className="w-5 h-5 text-blue-600" />
+                  <span>前端技术</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {Object.entries(techStack.frontend).map(([key, value]) => (
+                  <div key={key} className="flex justify-between text-sm">
+                    <span className="text-gray-600 capitalize">{key}:</span>
+                    <span className="font-medium">{value}</span>
                   </div>
-                </div>
+                ))}
+              </CardContent>
+            </Card>
 
-                {/* 后端技术 */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Server className="w-5 h-5 mr-2" />
-                    后端技术栈
-                  </h3>
-                  <div className="space-y-3">
-                    {techStack.backend.map((tech) => (
-                      <div key={tech.name} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">{tech.name}</div>
-                          <div className="text-sm text-gray-600">{tech.description}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm text-gray-500">{tech.version}</div>
-                          <Badge className={getStatusColor(tech.status)}>{tech.status}</Badge>
-                        </div>
-                      </div>
-                    ))}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Server className="w-5 h-5 text-green-600" />
+                  <span>后端技术</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {Object.entries(techStack.backend).map(([key, value]) => (
+                  <div key={key} className="flex justify-between text-sm">
+                    <span className="text-gray-600 capitalize">{key}:</span>
+                    <span className="font-medium">{value}</span>
                   </div>
-                </div>
+                ))}
+              </CardContent>
+            </Card>
 
-                {/* 数据库技术 */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Database className="w-5 h-5 mr-2" />
-                    数据存储技术
-                  </h3>
-                  <div className="space-y-3">
-                    {techStack.database.map((tech) => (
-                      <div key={tech.name} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">{tech.name}</div>
-                          <div className="text-sm text-gray-600">{tech.description}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm text-gray-500">{tech.version}</div>
-                          <Badge className={getStatusColor(tech.status)}>{tech.status}</Badge>
-                        </div>
-                      </div>
-                    ))}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Database className="w-5 h-5 text-purple-600" />
+                  <span>数据存储</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {Object.entries(techStack.database).map(([key, value]) => (
+                  <div key={key} className="flex justify-between text-sm">
+                    <span className="text-gray-600 capitalize">{key}:</span>
+                    <span className="font-medium">{value}</span>
                   </div>
-                </div>
+                ))}
+              </CardContent>
+            </Card>
 
-                {/* 开发工具 */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Settings className="w-5 h-5 mr-2" />
-                    开发工具
-                  </h3>
-                  <div className="space-y-3">
-                    {techStack.tools.map((tech) => (
-                      <div key={tech.name} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div>
-                          <div className="font-medium">{tech.name}</div>
-                          <div className="text-sm text-gray-600">{tech.description}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm text-gray-500">{tech.version}</div>
-                          <Badge className={getStatusColor(tech.status)}>{tech.status}</Badge>
-                        </div>
-                      </div>
-                    ))}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Settings className="w-5 h-5 text-orange-600" />
+                  <span>开发工具</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {Object.entries(techStack.tools).map(([key, value]) => (
+                  <div key={key} className="flex justify-between text-sm">
+                    <span className="text-gray-600 capitalize">{key}:</span>
+                    <span className="font-medium">{value}</span>
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
 
           {/* 技术特色 */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Lightbulb className="w-5 h-5" />
-                <span>技术特色与优势</span>
-              </CardTitle>
+              <CardTitle>技术特色与优势</CardTitle>
+              <CardDescription>本系统采用的核心技术特色和竞争优势</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center p-6 border rounded-lg">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Globe className="w-6 h-6 text-blue-600" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium">完全本地化</h4>
+                      <p className="text-sm text-gray-600">无需服务器依赖，数据完全存储在本地，保证数据安全和隐私</p>
+                    </div>
                   </div>
-                  <h3 className="font-semibold mb-2">完全本地化</h3>
-                  <p className="text-sm text-gray-600">无需服务器依赖，所有数据存储在本地，确保数据安全和隐私保护</p>
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium">高性能响应</h4>
+                      <p className="text-sm text-gray-600">本地数据库查询，响应时间小于100ms，用户体验极佳</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium">离线可用</h4>
+                      <p className="text-sm text-gray-600">PWA技术支持，断网情况下仍可正常使用所有功能</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-center p-6 border rounded-lg">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Zap className="w-6 h-6 text-green-600" />
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium">现代化架构</h4>
+                      <p className="text-sm text-gray-600">基于Next.js 14和TypeScript，代码质量高，维护性强</p>
+                    </div>
                   </div>
-                  <h3 className="font-semibold mb-2">高性能响应</h3>
-                  <p className="text-sm text-gray-600">本地数据库查询响应时间小于100ms，提供流畅的用户体验</p>
-                </div>
-                <div className="text-center p-6 border rounded-lg">
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Shield className="w-6 h-6 text-purple-600" />
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium">企业级安全</h4>
+                      <p className="text-sm text-gray-600">多层次安全防护，数据加密，权限控制，审计日志</p>
+                    </div>
                   </div>
-                  <h3 className="font-semibold mb-2">企业级安全</h3>
-                  <p className="text-sm text-gray-600">多层安全防护，包括数据加密、权限控制和审计日志</p>
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium">易于部署</h4>
+                      <p className="text-sm text-gray-600">支持多种部署方式，一键部署到Vercel、Netlify等平台</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -381,65 +251,104 @@ export function DataStackDocumentation() {
                 <Layers className="w-5 h-5" />
                 <span>分层架构设计</span>
               </CardTitle>
-              <CardDescription>系统采用经典的分层架构模式，确保代码的可维护性和扩展性</CardDescription>
+              <CardDescription>系统采用经典的分层架构，确保代码的可维护性和扩展性</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {architectureLayers.map((layer, index) => (
-                  <div key={layer.name} className="border rounded-lg p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-sm font-bold">
-                          {index + 1}
-                        </div>
-                        <h3 className="text-lg font-semibold">{layer.name}</h3>
-                        <Badge className={layer.color}>核心层</Badge>
-                      </div>
+              <div className="space-y-6">
+                {/* 架构图 */}
+                <div className="bg-gray-50 p-6 rounded-lg">
+                  <div className="space-y-4">
+                    <div className="bg-blue-100 p-4 rounded-lg border-l-4 border-blue-500">
+                      <h4 className="font-medium text-blue-800">表现层 (Presentation Layer)</h4>
+                      <p className="text-sm text-blue-700 mt-1">React组件、页面路由、用户界面</p>
                     </div>
-                    <p className="text-gray-600 mb-4">{layer.description}</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-medium mb-2">使用技术</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {layer.technologies.map((tech) => (
-                            <Badge key={tech} variant="outline">
-                              {tech}
-                            </Badge>
-                          ))}
-                        </div>
+                    <div className="bg-green-100 p-4 rounded-lg border-l-4 border-green-500">
+                      <h4 className="font-medium text-green-800">业务逻辑层 (Business Logic Layer)</h4>
+                      <p className="text-sm text-green-700 mt-1">业务规则、数据处理、状态管理</p>
+                    </div>
+                    <div className="bg-purple-100 p-4 rounded-lg border-l-4 border-purple-500">
+                      <h4 className="font-medium text-purple-800">数据访问层 (Data Access Layer)</h4>
+                      <p className="text-sm text-purple-700 mt-1">数据库操作、缓存管理、数据同步</p>
+                    </div>
+                    <div className="bg-orange-100 p-4 rounded-lg border-l-4 border-orange-500">
+                      <h4 className="font-medium text-orange-800">数据存储层 (Data Storage Layer)</h4>
+                      <p className="text-sm text-orange-700 mt-1">IndexedDB、LocalStorage、SessionStorage</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 组件关系 */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-medium mb-3">核心组件</h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2 text-sm">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <span>页面组件 (Pages)</span>
                       </div>
-                      <div>
-                        <h4 className="font-medium mb-2">主要职责</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {layer.responsibilities.map((responsibility) => (
-                            <li key={responsibility} className="flex items-center">
-                              <CheckCircle className="w-3 h-3 text-green-500 mr-2" />
-                              {responsibility}
-                            </li>
-                          ))}
-                        </ul>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span>业务组件 (Components)</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                        <span>数据服务 (Services)</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                        <span>工具库 (Utils)</span>
                       </div>
                     </div>
                   </div>
-                ))}
+                  <div>
+                    <h4 className="font-medium mb-3">数据流向</h4>
+                    <div className="space-y-2 text-sm">
+                      <div>1. 用户交互 → React组件</div>
+                      <div>2. 组件事件 → 业务逻辑</div>
+                      <div>3. 业务处理 → 数据服务</div>
+                      <div>4. 数据操作 → IndexedDB</div>
+                      <div>5. 结果返回 → 界面更新</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* 组件关系图 */}
+          {/* 模块依赖 */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Network className="w-5 h-5" />
-                <span>组件关系图</span>
-              </CardTitle>
+              <CardTitle>模块依赖关系</CardTitle>
+              <CardDescription>各功能模块之间的依赖关系和交互方式</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="bg-gray-50 p-6 rounded-lg">
-                <div className="text-center text-gray-500 py-12">
-                  <Network className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p>组件关系图将在后续版本中提供</p>
-                  <p className="text-sm mt-2">包含详细的模块依赖关系和数据流向</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-blue-800 mb-2">核心模块</h4>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• 数据库管理</li>
+                    <li>• 权限控制</li>
+                    <li>• 错误处理</li>
+                    <li>• 日志记录</li>
+                  </ul>
+                </div>
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-green-800 mb-2">业务模块</h4>
+                  <ul className="text-sm text-green-700 space-y-1">
+                    <li>• 客户管理</li>
+                    <li>• 任务管理</li>
+                    <li>• OKR管理</li>
+                    <li>• 审批流程</li>
+                  </ul>
+                </div>
+                <div className="bg-purple-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-purple-800 mb-2">扩展模块</h4>
+                  <ul className="text-sm text-purple-700 space-y-1">
+                    <li>• AI分析</li>
+                    <li>• 第三方集成</li>
+                    <li>• 数据分析</li>
+                    <li>• 通知中心</li>
+                  </ul>
                 </div>
               </div>
             </CardContent>
@@ -458,32 +367,89 @@ export function DataStackDocumentation() {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {dataFlow.map((flow, index) => (
-                  <div key={flow.step} className="flex items-center space-x-4">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 font-bold">{flow.step}</span>
-                      </div>
+                {/* 流程步骤 */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                      <span className="text-blue-600 font-bold">1</span>
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-semibold">{flow.title}</h3>
-                          <p className="text-gray-600">{flow.description}</p>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant="outline">{flow.component}</Badge>
-                          <p className="text-sm text-gray-500 mt-1">{flow.action}</p>
-                        </div>
-                      </div>
-                    </div>
-                    {index < dataFlow.length - 1 && (
-                      <div className="flex-shrink-0">
-                        <div className="w-6 h-6 text-gray-400">→</div>
-                      </div>
-                    )}
+                    <h4 className="font-medium">用户交互</h4>
+                    <p className="text-sm text-gray-600 mt-1">点击、输入、提交</p>
                   </div>
-                ))}
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                      <span className="text-green-600 font-bold">2</span>
+                    </div>
+                    <h4 className="font-medium">事件处理</h4>
+                    <p className="text-sm text-gray-600 mt-1">React事件处理器</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                      <span className="text-purple-600 font-bold">3</span>
+                    </div>
+                    <h4 className="font-medium">业务逻辑</h4>
+                    <p className="text-sm text-gray-600 mt-1">数据验证、处理</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                      <span className="text-orange-600 font-bold">4</span>
+                    </div>
+                    <h4 className="font-medium">数据持久化</h4>
+                    <p className="text-sm text-gray-600 mt-1">IndexedDB存储</p>
+                  </div>
+                </div>
+
+                {/* 详细流程 */}
+                <div className="bg-gray-50 p-6 rounded-lg">
+                  <h4 className="font-medium mb-4">详细数据流程</h4>
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                        1
+                      </div>
+                      <div>
+                        <h5 className="font-medium">用户界面交互</h5>
+                        <p className="text-sm text-gray-600">用户在React组件中进行操作，触发事件处理器</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                        2
+                      </div>
+                      <div>
+                        <h5 className="font-medium">数据验证与处理</h5>
+                        <p className="text-sm text-gray-600">前端验证用户输入，格式化数据，准备发送到业务层</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                        3
+                      </div>
+                      <div>
+                        <h5 className="font-medium">业务逻辑执行</h5>
+                        <p className="text-sm text-gray-600">执行业务规则，调用数据服务层进行数据操作</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                        4
+                      </div>
+                      <div>
+                        <h5 className="font-medium">数据库操作</h5>
+                        <p className="text-sm text-gray-600">通过IndexedDB API进行数据的增删改查操作</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                        5
+                      </div>
+                      <div>
+                        <h5 className="font-medium">结果反馈</h5>
+                        <p className="text-sm text-gray-600">操作结果返回到界面，更新组件状态，显示给用户</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -492,43 +458,61 @@ export function DataStackDocumentation() {
           <Card>
             <CardHeader>
               <CardTitle>数据同步机制</CardTitle>
-              <CardDescription>本地数据的同步和一致性保证</CardDescription>
+              <CardDescription>离线数据同步和冲突解决策略</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-medium mb-3">实时同步</h4>
-                  <ul className="space-y-2 text-sm text-gray-600">
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      数据变更即时更新到本地数据库
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      UI状态与数据库状态保持一致
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      支持乐观锁防止数据冲突
-                    </li>
-                  </ul>
+                  <h4 className="font-medium mb-3">同步策略</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-start space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium">实时同步</p>
+                        <p className="text-xs text-gray-600">在线状态下实时同步数据变更</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium">离线缓存</p>
+                        <p className="text-xs text-gray-600">离线时将操作缓存到本地队列</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium">批量同步</p>
+                        <p className="text-xs text-gray-600">重新连接时批量处理缓存操作</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div>
-                  <h4 className="font-medium mb-3">离线支持</h4>
-                  <ul className="space-y-2 text-sm text-gray-600">
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      完全离线操作能力
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      离线数据队列管理
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      网络恢复后自动同步
-                    </li>
-                  </ul>
+                  <h4 className="font-medium mb-3">冲突解决</h4>
+                  <div className="space-y-3">
+                    <div className="flex items-start space-x-2">
+                      <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium">时间戳优先</p>
+                        <p className="text-xs text-gray-600">以最新修改时间为准</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium">用户选择</p>
+                        <p className="text-xs text-gray-600">提示用户手动选择保留版本</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-2">
+                      <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium">合并策略</p>
+                        <p className="text-xs text-gray-600">智能合并非冲突字段</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -541,151 +525,145 @@ export function DataStackDocumentation() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Database className="w-5 h-5" />
-                <span>数据库架构设计</span>
+                <span>IndexedDB架构设计</span>
               </CardTitle>
-              <CardDescription>基于IndexedDB的本地化数据库设计</CardDescription>
+              <CardDescription>本地数据库的表结构和索引设计</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
                 {/* 数据表结构 */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">核心数据表</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {[
-                      {
-                        name: "customers",
-                        description: "客户信息表",
-                        fields: ["id", "name", "company", "email", "phone", "status"],
-                        indexes: ["name", "company", "status"],
-                      },
-                      {
-                        name: "tasks",
-                        description: "任务管理表",
-                        fields: ["id", "title", "status", "priority", "assignee", "dueDate"],
-                        indexes: ["status", "priority", "assignee"],
-                      },
-                      {
-                        name: "okrs",
-                        description: "OKR目标表",
-                        fields: ["id", "title", "owner", "department", "quarter", "progress"],
-                        indexes: ["owner", "department", "quarter"],
-                      },
-                      {
-                        name: "invoices",
-                        description: "发票管理表",
-                        fields: ["id", "number", "customerName", "amount", "status", "dueDate"],
-                        indexes: ["number", "status", "customerName"],
-                      },
-                      {
-                        name: "users",
-                        description: "用户信息表",
-                        fields: ["id", "name", "email", "role", "department", "status"],
-                        indexes: ["email", "role", "department"],
-                      },
-                      {
-                        name: "notifications",
-                        description: "通知消息表",
-                        fields: ["id", "type", "title", "content", "isRead", "userId"],
-                        indexes: ["type", "userId", "isRead"],
-                      },
-                    ].map((table) => (
-                      <div key={table.name} className="border rounded-lg p-4">
-                        <h4 className="font-medium mb-2">{table.name}</h4>
-                        <p className="text-sm text-gray-600 mb-3">{table.description}</p>
-                        <div className="space-y-2">
-                          <div>
-                            <span className="text-xs font-medium text-gray-500">字段:</span>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {table.fields.map((field) => (
-                                <Badge key={field} variant="outline" className="text-xs">
-                                  {field}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                          <div>
-                            <span className="text-xs font-medium text-gray-500">索引:</span>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {table.indexes.map((index) => (
-                                <Badge key={index} className="text-xs bg-blue-100 text-blue-800">
-                                  {index}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
+                  <h4 className="font-medium mb-4">数据表结构</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <h5 className="font-medium text-blue-800 mb-2">customers (客户表)</h5>
+                      <div className="text-sm text-blue-700 space-y-1">
+                        <div>• id (主键)</div>
+                        <div>• name (姓名)</div>
+                        <div>• company (公司)</div>
+                        <div>• email (邮箱)</div>
+                        <div>• status (状态)</div>
+                        <div>• createdAt (创建时间)</div>
                       </div>
-                    ))}
+                    </div>
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <h5 className="font-medium text-green-800 mb-2">tasks (任务表)</h5>
+                      <div className="text-sm text-green-700 space-y-1">
+                        <div>• id (主键)</div>
+                        <div>• title (标题)</div>
+                        <div>• status (状态)</div>
+                        <div>• priority (优先级)</div>
+                        <div>• assignee (负责人)</div>
+                        <div>• dueDate (截止日期)</div>
+                      </div>
+                    </div>
+                    <div className="bg-purple-50 p-4 rounded-lg">
+                      <h5 className="font-medium text-purple-800 mb-2">okrs (目标表)</h5>
+                      <div className="text-sm text-purple-700 space-y-1">
+                        <div>• id (主键)</div>
+                        <div>• title (标题)</div>
+                        <div>• owner (负责人)</div>
+                        <div>• quarter (季度)</div>
+                        <div>• progress (进度)</div>
+                        <div>• keyResults (关键结果)</div>
+                      </div>
+                    </div>
+                    <div className="bg-orange-50 p-4 rounded-lg">
+                      <h5 className="font-medium text-orange-800 mb-2">notifications (通知表)</h5>
+                      <div className="text-sm text-orange-700 space-y-1">
+                        <div>• id (主键)</div>
+                        <div>• type (类型)</div>
+                        <div>• title (标题)</div>
+                        <div>• isRead (已读状态)</div>
+                        <div>• userId (用户ID)</div>
+                        <div>• timestamp (时间戳)</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* 数据关系 */}
+                {/* 索引设计 */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">数据关系</h3>
+                  <h4 className="font-medium mb-4">索引优化</h4>
                   <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="space-y-3 text-sm">
-                      <div className="flex items-center">
-                        <span className="font-medium w-24">customers</span>
-                        <span className="text-gray-500 mx-2">→</span>
-                        <span>tasks (assignedTo), invoices (customerName)</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h5 className="font-medium mb-2">主要索引</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• 主键索引 (id)</li>
+                          <li>• 状态索引 (status)</li>
+                          <li>• 时间索引 (createdAt)</li>
+                          <li>• 用户索引 (userId)</li>
+                        </ul>
                       </div>
-                      <div className="flex items-center">
-                        <span className="font-medium w-24">users</span>
-                        <span className="text-gray-500 mx-2">→</span>
-                        <span>tasks (assignee), okrs (owner), notifications (userId)</span>
-                      </div>
-                      <div className="flex items-center">
-                        <span className="font-medium w-24">okrs</span>
-                        <span className="text-gray-500 mx-2">→</span>
-                        <span>keyResults (embedded), tasks (project)</span>
+                      <div>
+                        <h5 className="font-medium mb-2">复合索引</h5>
+                        <ul className="text-sm space-y-1">
+                          <li>• [userId, status]</li>
+                          <li>• [type, timestamp]</li>
+                          <li>• [assignee, dueDate]</li>
+                          <li>• [company, status]</li>
+                        </ul>
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                {/* 查询优化 */}
+                <div>
+                  <h4 className="font-medium mb-4">查询优化策略</h4>
+                  <div className="space-y-3">
+                    <Alert>
+                      <Info className="h-4 w-4" />
+                      <AlertDescription>
+                        <strong>分页查询:</strong> 使用cursor-based分页，避免大量数据加载
+                      </AlertDescription>
+                    </Alert>
+                    <Alert>
+                      <Info className="h-4 w-4" />
+                      <AlertDescription>
+                        <strong>索引利用:</strong> 查询条件优先使用已建立的索引字段
+                      </AlertDescription>
+                    </Alert>
+                    <Alert>
+                      <Info className="h-4 w-4" />
+                      <AlertDescription>
+                        <strong>数据缓存:</strong> 热点数据缓存到内存，减少数据库访问
+                      </AlertDescription>
+                    </Alert>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* 查询优化 */}
+          {/* 数据模型 */}
           <Card>
             <CardHeader>
-              <CardTitle>查询优化策略</CardTitle>
+              <CardTitle>数据模型关系</CardTitle>
+              <CardDescription>各数据表之间的关联关系</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-medium mb-3">索引策略</h4>
-                  <ul className="space-y-2 text-sm text-gray-600">
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      为常用查询字段建立索引
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      复合索引支持多字段查询
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      定期索引维护和优化
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-3">缓存机制</h4>
-                  <ul className="space-y-2 text-sm text-gray-600">
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      查询结果内存缓存
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      智能缓存失效策略
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      分页查询优化
-                    </li>
-                  </ul>
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4">
+                    <div className="bg-blue-100 px-3 py-1 rounded">customers</div>
+                    <span className="text-gray-400">1:N</span>
+                    <div className="bg-green-100 px-3 py-1 rounded">tasks</div>
+                    <span className="text-sm text-gray-600">(客户可以有多个任务)</span>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="bg-purple-100 px-3 py-1 rounded">users</div>
+                    <span className="text-gray-400">1:N</span>
+                    <div className="bg-orange-100 px-3 py-1 rounded">notifications</div>
+                    <span className="text-sm text-gray-600">(用户可以有多个通知)</span>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="bg-yellow-100 px-3 py-1 rounded">okrs</div>
+                    <span className="text-gray-400">1:N</span>
+                    <div className="bg-red-100 px-3 py-1 rounded">keyResults</div>
+                    <span className="text-sm text-gray-600">(OKR包含多个关键结果)</span>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -694,83 +672,176 @@ export function DataStackDocumentation() {
 
         {/* 性能指标 */}
         <TabsContent value="performance" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="w-5 h-5" />
-                <span>性能监控指标</span>
-              </CardTitle>
-              <CardDescription>系统关键性能指标的实时监控</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {performanceMetrics.map((metric) => (
-                  <div key={metric.metric} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium">{metric.metric}</h4>
-                      <Badge className={`${getPerformanceColor(metric.status)} bg-transparent border-current`}>
-                        {metric.status}
-                      </Badge>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">目标值:</span>
-                        <span className="font-medium">{metric.target}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">当前值:</span>
-                        <span className={`font-medium ${getPerformanceColor(metric.status)}`}>{metric.current}</span>
-                      </div>
-                      <Progress
-                        value={
-                          metric.status === "excellent"
-                            ? 100
-                            : metric.status === "good"
-                              ? 80
-                              : metric.status === "warning"
-                                ? 60
-                                : 40
-                        }
-                        className="h-2"
-                      />
-                    </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Zap className="w-5 h-5 text-yellow-600" />
+                  <span>加载性能</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm">首次加载</span>
+                    <span className="text-sm font-medium">{performanceMetrics.loadTime}s</span>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  <Progress value={(performanceMetrics.loadTime / 3) * 100} className="h-2" />
+                </div>
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm">首次绘制</span>
+                    <span className="text-sm font-medium">{performanceMetrics.firstPaint}s</span>
+                  </div>
+                  <Progress value={(performanceMetrics.firstPaint / 2) * 100} className="h-2" />
+                </div>
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm">可交互时间</span>
+                    <span className="text-sm font-medium">{performanceMetrics.interactive}s</span>
+                  </div>
+                  <Progress value={(performanceMetrics.interactive / 3) * 100} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Database className="w-5 h-5 text-blue-600" />
+                  <span>数据库性能</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm">查询响应</span>
+                    <span className="text-sm font-medium">{performanceMetrics.dbQuery * 1000}ms</span>
+                  </div>
+                  <Progress value={(performanceMetrics.dbQuery / 0.1) * 100} className="h-2" />
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">&lt; 100ms</div>
+                  <div className="text-sm text-gray-600">平均查询时间</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Package className="w-5 h-5 text-purple-600" />
+                  <span>资源优化</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm">包大小</span>
+                    <span className="text-sm font-medium">{performanceMetrics.bundleSize}KB</span>
+                  </div>
+                  <Progress value={(performanceMetrics.bundleSize / 500) * 100} className="h-2" />
+                </div>
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm">Lighthouse评分</span>
+                    <span className="text-sm font-medium">{performanceMetrics.lighthouse}/100</span>
+                  </div>
+                  <Progress value={performanceMetrics.lighthouse} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* 性能优化建议 */}
           <Card>
             <CardHeader>
-              <CardTitle>性能优化建议</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <TrendingUp className="w-5 h-5" />
+                <span>性能优化建议</span>
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg">
-                  <Info className="w-5 h-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <h4 className="font-medium text-blue-900">数据库优化</h4>
-                    <p className="text-sm text-blue-800 mt-1">
-                      定期清理过期数据，优化索引结构，使用批量操作减少事务开销
-                    </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-medium mb-3 text-green-700">已实施优化</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-sm">代码分割和懒加载</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-sm">图片压缩和WebP格式</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-sm">CSS和JS压缩</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-sm">Service Worker缓存</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <span className="text-sm">数据库索引优化</span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-start space-x-3 p-4 bg-green-50 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
-                  <div>
-                    <h4 className="font-medium text-green-900">缓存策略</h4>
-                    <p className="text-sm text-green-800 mt-1">
-                      实施智能缓存策略，预加载常用数据，使用虚拟滚动优化大列表渲染
-                    </p>
+                <div>
+                  <h4 className="font-medium mb-3 text-blue-700">进一步优化</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm">虚拟滚动优化长列表</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm">Web Workers处理重计算</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm">预加载关键资源</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm">CDN加速静态资源</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <AlertTriangle className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm">HTTP/3协议支持</span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-start space-x-3 p-4 bg-yellow-50 rounded-lg">
-                  <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5" />
-                  <div>
-                    <h4 className="font-medium text-yellow-900">内存管理</h4>
-                    <p className="text-sm text-yellow-800 mt-1">监控内存使用情况，及时释放不需要的对象，避免内存泄漏</p>
-                  </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 监控指标 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Monitor className="w-5 h-5" />
+                <span>实时监控指标</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">98.5%</div>
+                  <div className="text-sm text-blue-700">可用性</div>
+                </div>
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">45ms</div>
+                  <div className="text-sm text-green-700">平均响应</div>
+                </div>
+                <div className="text-center p-4 bg-purple-50 rounded-lg">
+                  <div className="text-2xl font-bold text-purple-600">1.2MB</div>
+                  <div className="text-sm text-purple-700">内存使用</div>
+                </div>
+                <div className="text-center p-4 bg-orange-50 rounded-lg">
+                  <div className="text-2xl font-bold text-orange-600">0.01%</div>
+                  <div className="text-sm text-orange-700">错误率</div>
                 </div>
               </div>
             </CardContent>
@@ -783,33 +854,59 @@ export function DataStackDocumentation() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Shield className="w-5 h-5" />
-                <span>安全特性</span>
+                <span>安全防护体系</span>
               </CardTitle>
-              <CardDescription>多层次的安全防护机制</CardDescription>
+              <CardDescription>多层次安全防护机制，确保数据和系统安全</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {securityFeatures.map((feature) => (
-                  <div key={feature.feature} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-medium">{feature.feature}</h4>
-                      <Badge
-                        className={
-                          feature.status === "implemented"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }
-                      >
-                        {feature.status === "implemented" ? "已实现" : "计划中"}
-                      </Badge>
-                    </div>
-                    <p className="text-gray-600 mb-2">{feature.description}</p>
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Lock className="w-4 h-4 mr-2" />
-                      <span>实现方式: {feature.implementation}</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {securityFeatures.map((feature, index) => (
+                  <div key={index} className="flex items-start space-x-3 p-4 bg-green-50 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium text-green-800">{feature.name}</h4>
+                      <p className="text-sm text-green-700 mt-1">{feature.description}</p>
                     </div>
                   </div>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 数据安全 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Lock className="w-5 h-5" />
+                <span>数据安全措施</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-blue-800 mb-2">数据加密</h4>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• 敏感数据AES-256加密存储</li>
+                    <li>• 传输过程HTTPS加密</li>
+                    <li>• 密钥安全管理和轮换</li>
+                  </ul>
+                </div>
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-green-800 mb-2">访问控制</h4>
+                  <ul className="text-sm text-green-700 space-y-1">
+                    <li>• 基于角色的权限控制(RBAC)</li>
+                    <li>• 最小权限原则</li>
+                    <li>• 会话管理和超时控制</li>
+                  </ul>
+                </div>
+                <div className="bg-purple-50 p-4 rounded-lg">
+                  <h4 className="font-medium text-purple-800 mb-2">审计监控</h4>
+                  <ul className="text-sm text-purple-700 space-y-1">
+                    <li>• 完整的操作日志记录</li>
+                    <li>• 异常行为检测和告警</li>
+                    <li>• 数据访问轨迹追踪</li>
+                  </ul>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -820,41 +917,25 @@ export function DataStackDocumentation() {
               <CardTitle>安全最佳实践</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-medium mb-3">数据保护</h4>
-                  <ul className="space-y-2 text-sm text-gray-600">
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      敏感数据本地加密存储
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      定期数据备份和恢复测试
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      数据访问权限控制
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-3">系统安全</h4>
-                  <ul className="space-y-2 text-sm text-gray-600">
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      输入验证和数据清理
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      安全的错误处理机制
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                      完整的审计日志记录
-                    </li>
-                  </ul>
-                </div>
+              <div className="space-y-4">
+                <Alert>
+                  <Shield className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>定期安全审计:</strong> 建议每季度进行一次全面的安全评估和漏洞扫描
+                  </AlertDescription>
+                </Alert>
+                <Alert>
+                  <Lock className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>密码策略:</strong> 强制使用复杂密码，定期更换，启用双因素认证
+                  </AlertDescription>
+                </Alert>
+                <Alert>
+                  <Monitor className="h-4 w-4" />
+                  <AlertDescription>
+                    <strong>实时监控:</strong> 部署安全监控系统，及时发现和响应安全威胁
+                  </AlertDescription>
+                </Alert>
               </div>
             </CardContent>
           </Card>
@@ -866,161 +947,58 @@ export function DataStackDocumentation() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Cloud className="w-5 h-5" />
-                <span>部署指南</span>
+                <span>部署选项</span>
               </CardTitle>
-              <CardDescription>系统部署和配置说明</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* 环境要求 */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">环境要求</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-medium mb-3">开发环境</h4>
-                      <ul className="space-y-2 text-sm text-gray-600">
-                        <li className="flex items-center">
-                          <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                          Node.js 18.0+
-                        </li>
-                        <li className="flex items-center">
-                          <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                          npm 9.0+ 或 yarn 1.22+
-                        </li>
-                        <li className="flex items-center">
-                          <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                          Git 2.30+
-                        </li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-3">浏览器支持</h4>
-                      <ul className="space-y-2 text-sm text-gray-600">
-                        <li className="flex items-center">
-                          <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                          Chrome 90+
-                        </li>
-                        <li className="flex items-center">
-                          <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                          Firefox 88+
-                        </li>
-                        <li className="flex items-center">
-                          <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                          Safari 14+
-                        </li>
-                        <li className="flex items-center">
-                          <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
-                          Edge 90+
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 部署步骤 */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">部署步骤</h3>
-                  <div className="space-y-4">
-                    {[
-                      {
-                        step: 1,
-                        title: "克隆代码仓库",
-                        command: "git clone https://github.com/your-org/yanyu-ems.git",
-                        description: "从Git仓库获取最新代码",
-                      },
-                      {
-                        step: 2,
-                        title: "安装依赖",
-                        command: "npm install",
-                        description: "安装项目所需的所有依赖包",
-                      },
-                      {
-                        step: 3,
-                        title: "环境配置",
-                        command: "cp .env.example .env.local",
-                        description: "复制并配置环境变量文件",
-                      },
-                      {
-                        step: 4,
-                        title: "构建项目",
-                        command: "npm run build",
-                        description: "构建生产版本的应用",
-                      },
-                      {
-                        step: 5,
-                        title: "启动服务",
-                        command: "npm start",
-                        description: "启动生产环境服务",
-                      },
-                    ].map((step) => (
-                      <div key={step.step} className="flex items-start space-x-4 p-4 border rounded-lg">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-blue-600 font-bold text-sm">{step.step}</span>
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium mb-1">{step.title}</h4>
-                          <p className="text-sm text-gray-600 mb-2">{step.description}</p>
-                          <code className="bg-gray-100 px-2 py-1 rounded text-sm">{step.command}</code>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 配置选项 */}
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">配置选项</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <pre className="text-sm text-gray-700">
-                      {`# .env.local 配置示例
-NEXT_PUBLIC_APP_NAME="言语云企业管理系统"
-NEXT_PUBLIC_APP_VERSION="1.0.0"
-NEXT_PUBLIC_ENABLE_PWA=true
-NEXT_PUBLIC_ENABLE_OFFLINE=true
-NEXT_PUBLIC_DEBUG_MODE=false`}
-                    </pre>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 部署平台 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>推荐部署平台</CardTitle>
+              <CardDescription>支持多种部署方式，满足不同场景需求</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center p-6 border rounded-lg">
-                  <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <span className="text-white font-bold">V</span>
+                <div className="bg-blue-50 p-6 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Globe className="w-6 h-6 text-blue-600" />
+                    <h4 className="font-medium text-blue-800">Vercel部署</h4>
                   </div>
-                  <h3 className="font-semibold mb-2">Vercel</h3>
-                  <p className="text-sm text-gray-600 mb-4">推荐的部署平台，零配置部署</p>
-                  <Button size="sm" className="w-full">
+                  <div className="space-y-2 text-sm text-blue-700">
+                    <p>• 一键部署，自动CI/CD</p>
+                    <p>• 全球CDN加速</p>
+                    <p>• 自动HTTPS证书</p>
+                    <p>• 无服务器架构</p>
+                  </div>
+                  <Button className="w-full mt-4" size="sm">
                     <ExternalLink className="w-4 h-4 mr-2" />
                     部署到Vercel
                   </Button>
                 </div>
-                <div className="text-center p-6 border rounded-lg">
-                  <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <span className="text-white font-bold">N</span>
+
+                <div className="bg-green-50 p-6 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Server className="w-6 h-6 text-green-600" />
+                    <h4 className="font-medium text-green-800">Netlify部署</h4>
                   </div>
-                  <h3 className="font-semibold mb-2">Netlify</h3>
-                  <p className="text-sm text-gray-600 mb-4">静态站点托管，支持CI/CD</p>
-                  <Button size="sm" variant="outline" className="w-full bg-transparent">
+                  <div className="space-y-2 text-sm text-green-700">
+                    <p>• Git集成部署</p>
+                    <p>• 表单处理功能</p>
+                    <p>• 分支预览</p>
+                    <p>• 边缘函数支持</p>
+                  </div>
+                  <Button className="w-full mt-4 bg-transparent" size="sm" variant="outline">
                     <ExternalLink className="w-4 h-4 mr-2" />
                     部署到Netlify
                   </Button>
                 </div>
-                <div className="text-center p-6 border rounded-lg">
-                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-                    <span className="text-white font-bold">D</span>
+
+                <div className="bg-purple-50 p-6 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Package className="w-6 h-6 text-purple-600" />
+                    <h4 className="font-medium text-purple-800">Docker部署</h4>
                   </div>
-                  <h3 className="font-semibold mb-2">Docker</h3>
-                  <p className="text-sm text-gray-600 mb-4">容器化部署，支持私有云</p>
-                  <Button size="sm" variant="outline" className="w-full bg-transparent">
+                  <div className="space-y-2 text-sm text-purple-700">
+                    <p>• 容器化部署</p>
+                    <p>• 环境一致性</p>
+                    <p>• 易于扩展</p>
+                    <p>• 私有云支持</p>
+                  </div>
+                  <Button className="w-full mt-4 bg-transparent" size="sm" variant="outline">
                     <Download className="w-4 h-4 mr-2" />
                     下载Dockerfile
                   </Button>
@@ -1028,34 +1006,116 @@ NEXT_PUBLIC_DEBUG_MODE=false`}
               </div>
             </CardContent>
           </Card>
+
+          {/* 部署步骤 */}
+          <Card>
+            <CardHeader>
+              <CardTitle>快速部署步骤</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-medium mb-3">1. Vercel部署 (推荐)</h4>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <pre className="text-sm">
+                      <code>{`# 1. 克隆项目
+git clone https://github.com/your-repo/yanyu-ems.git
+cd yanyu-ems
+
+# 2. 安装依赖
+npm install
+
+# 3. 部署到Vercel
+npx vercel --prod`}</code>
+                    </pre>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium mb-3">2. Docker部署</h4>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <pre className="text-sm">
+                      <code>{`# 1. 构建镜像
+docker build -t yanyu-ems .
+
+# 2. 运行容器
+docker run -p 3000:3000 yanyu-ems
+
+# 3. 访问应用
+open http://localhost:3000`}</code>
+                    </pre>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium mb-3">3. 本地开发</h4>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <pre className="text-sm">
+                      <code>{`# 1. 安装依赖
+npm install
+
+# 2. 启动开发服务器
+npm run dev
+
+# 3. 构建生产版本
+npm run build`}</code>
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 环境配置 */}
+          <Card>
+            <CardHeader>
+              <CardTitle>环境配置</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium mb-2">环境变量配置</h4>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <pre className="text-sm">
+                      <code>{`# .env.local
+NEXT_PUBLIC_APP_NAME="言语云企业管理系统"
+NEXT_PUBLIC_APP_VERSION="1.0.0"
+NEXT_PUBLIC_API_URL="https://api.yanyu-cloud.com"
+
+# 可选配置
+NEXT_PUBLIC_ANALYTICS_ID="your-analytics-id"
+NEXT_PUBLIC_SENTRY_DSN="your-sentry-dsn"`}</code>
+                    </pre>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium mb-2">系统要求</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <h5 className="font-medium text-blue-800 mb-2">开发环境</h5>
+                      <ul className="text-sm text-blue-700 space-y-1">
+                        <li>• Node.js 18.0+</li>
+                        <li>• npm 8.0+ 或 yarn 1.22+</li>
+                        <li>• Git 2.0+</li>
+                      </ul>
+                    </div>
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <h5 className="font-medium text-green-800 mb-2">浏览器支持</h5>
+                      <ul className="text-sm text-green-700 space-y-1">
+                        <li>• Chrome 90+</li>
+                        <li>• Firefox 88+</li>
+                        <li>• Safari 14+</li>
+                        <li>• Edge 90+</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
-
-      {/* 底部信息 */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center space-y-4">
-            <div className="flex justify-center space-x-6 text-sm text-gray-600">
-              <div className="flex items-center">
-                <FileText className="w-4 h-4 mr-2" />
-                <span>文档版本: 1.0.0</span>
-              </div>
-              <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-2" />
-                <span>更新时间: 2025年6月28日</span>
-              </div>
-              <div className="flex items-center">
-                <Users className="w-4 h-4 mr-2" />
-                <span>维护团队: 言语云技术团队</span>
-              </div>
-            </div>
-            <div className="text-xs text-gray-500">
-              <p>© 2025 言语云科技有限公司. 保留所有权利.</p>
-              <p className="mt-1">本文档包含专有技术信息，仅供内部使用。</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }

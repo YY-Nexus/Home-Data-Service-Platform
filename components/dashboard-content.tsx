@@ -1,342 +1,375 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { SalesChart } from "@/components/charts/sales-chart"
-import { FinanceChart } from "@/components/charts/finance-chart"
-import { PerformanceChart } from "@/components/charts/performance-chart"
+import { Progress } from "@/components/ui/progress"
 import {
   Users,
+  CheckSquare,
+  TrendingUp,
   DollarSign,
-  ShoppingCart,
+  Calendar,
+  Bell,
   Target,
+  BarChart3,
+  Activity,
   Clock,
+  AlertTriangle,
   CheckCircle,
   ArrowUpRight,
   ArrowDownRight,
-  Activity,
-  Zap,
+  Plus,
+  Filter,
+  Download,
 } from "lucide-react"
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts"
 
-const stats = [
-  {
-    title: "总销售额",
-    value: "¥2,847,392",
-    change: "+12.5%",
-    trend: "up",
-    icon: DollarSign,
-    color: "from-emerald-400 to-emerald-500",
-  },
-  {
-    title: "活跃客户",
-    value: "1,247",
-    change: "+8.2%",
-    trend: "up",
-    icon: Users,
-    color: "from-blue-400 to-blue-500",
-  },
-  {
-    title: "待处理订单",
-    value: "156",
-    change: "-3.1%",
-    trend: "down",
-    icon: ShoppingCart,
-    color: "from-orange-400 to-orange-500",
-  },
-  {
-    title: "完成率",
-    value: "87.5%",
-    change: "+5.2%",
-    trend: "up",
-    icon: Target,
-    color: "from-purple-400 to-purple-500",
-  },
+// 模拟数据
+const salesData = [
+  { month: "1月", sales: 65000, target: 70000 },
+  { month: "2月", sales: 72000, target: 75000 },
+  { month: "3月", sales: 68000, target: 70000 },
+  { month: "4月", sales: 85000, target: 80000 },
+  { month: "5月", sales: 92000, target: 90000 },
+  { month: "6月", sales: 88000, target: 85000 },
+]
+
+const taskStatusData = [
+  { name: "已完成", value: 45, color: "#10b981" },
+  { name: "进行中", value: 32, color: "#3b82f6" },
+  { name: "待开始", value: 18, color: "#f59e0b" },
+  { name: "已逾期", value: 5, color: "#ef4444" },
 ]
 
 const recentActivities = [
-  {
-    id: 1,
-    type: "order",
-    title: "新订单 #2024-001",
-    description: "深圳华润集团下单 ¥125,000",
-    time: "5分钟前",
-    status: "success",
-  },
-  {
-    id: 2,
-    type: "task",
-    title: "任务完成",
-    description: "Q4销售报告制作已完成",
-    time: "15分钟前",
-    status: "success",
-  },
-  {
-    id: 3,
-    type: "alert",
-    title: "库存预警",
-    description: "产品A库存不足，需要补货",
-    time: "1小时前",
-    status: "warning",
-  },
-  {
-    id: 4,
-    type: "customer",
-    title: "新客户注册",
-    description: "广州万科地产完成注册",
-    time: "2小时前",
-    status: "info",
-  },
-]
-
-const quickActions = [
-  { label: "新建任务", icon: CheckCircle, color: "bg-blue-500" },
-  { label: "添加客户", icon: Users, color: "bg-emerald-500" },
-  { label: "创建订单", icon: ShoppingCart, color: "bg-orange-500" },
-  { label: "生成报表", icon: Activity, color: "bg-purple-500" },
+  { id: 1, type: "task", title: "完成产品原型设计", user: "张设计师", time: "2小时前", status: "completed" },
+  { id: 2, type: "customer", title: "新增客户：华润集团", user: "李销售", time: "4小时前", status: "new" },
+  { id: 3, type: "approval", title: "采购申请待审批", user: "财务部", time: "6小时前", status: "pending" },
+  { id: 4, type: "meeting", title: "项目评审会议", user: "项目组", time: "1天前", status: "scheduled" },
 ]
 
 export function DashboardContent() {
+  const [selectedPeriod, setSelectedPeriod] = useState("本月")
+  const [stats, setStats] = useState({
+    totalCustomers: 1248,
+    activeTasks: 156,
+    monthlyRevenue: 892000,
+    completionRate: 87,
+  })
+
+  const [trends, setTrends] = useState({
+    customers: 12.5,
+    tasks: -3.2,
+    revenue: 18.7,
+    completion: 5.4,
+  })
+
   return (
-    <div className="p-3 md:p-6 space-y-4 md:space-y-6 bg-gradient-to-br from-sky-50/50 via-blue-50/30 to-indigo-50/50 min-h-screen">
-      {/* 欢迎区域 */}
-      <div className="bg-gradient-to-r from-sky-400 to-blue-500 rounded-xl md:rounded-2xl p-4 md:p-6 text-white shadow-lg">
-        <div className="flex flex-col md:flex-row md:items-center justify-between space-y-3 md:space-y-0">
-          <div>
-            <h1 className="text-xl md:text-2xl font-bold mb-2">欢迎回来，管理员！</h1>
-            <p className="text-sky-100 text-sm md:text-base">
-              今天是{" "}
-              {new Date().toLocaleDateString("zh-CN", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                weekday: "long",
-              })}
-            </p>
-          </div>
-          <div className="flex items-center space-x-3 md:space-x-4">
-            <img
-              src="/images/zuoyou-logo.png"
-              alt="ZUOYOU"
-              className="w-8 h-8 md:w-12 md:h-12 object-contain opacity-80"
-            />
-            <div className="text-right">
-              <p className="text-xs md:text-sm text-sky-100">ZUOYOU 企业管理系统</p>
-              <p className="text-xs text-sky-200">让管理更简单</p>
+    <div className="p-6 space-y-6 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">
+      {/* 页面标题 */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800">仪表盘</h1>
+          <p className="text-slate-600 mt-1">欢迎回来，管理员！今天是 {new Date().toLocaleDateString("zh-CN")}</p>
+        </div>
+        <div className="flex items-center space-x-3">
+          <Button variant="outline" size="sm">
+            <Filter className="w-4 h-4 mr-2" />
+            筛选
+          </Button>
+          <Button variant="outline" size="sm">
+            <Download className="w-4 h-4 mr-2" />
+            导出
+          </Button>
+          <Button className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
+            <Plus className="w-4 h-4 mr-2" />
+            新建任务
+          </Button>
+        </div>
+      </div>
+
+      {/* 关键指标卡片 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">总客户数</CardTitle>
+            <Users className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-800">{stats.totalCustomers.toLocaleString()}</div>
+            <div className="flex items-center text-xs text-green-600 mt-1">
+              <ArrowUpRight className="w-3 h-3 mr-1" />+{trends.customers}% 较上月
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">活跃任务</CardTitle>
+            <CheckSquare className="h-4 w-4 text-emerald-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-800">{stats.activeTasks}</div>
+            <div className="flex items-center text-xs text-red-600 mt-1">
+              <ArrowDownRight className="w-3 h-3 mr-1" />
+              {Math.abs(trends.tasks)}% 较上月
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">月度营收</CardTitle>
+            <DollarSign className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-800">¥{(stats.monthlyRevenue / 10000).toFixed(1)}万</div>
+            <div className="flex items-center text-xs text-green-600 mt-1">
+              <ArrowUpRight className="w-3 h-3 mr-1" />+{trends.revenue}% 较上月
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-600">完成率</CardTitle>
+            <Target className="h-4 w-4 text-purple-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-800">{stats.completionRate}%</div>
+            <div className="flex items-center text-xs text-green-600 mt-1">
+              <ArrowUpRight className="w-3 h-3 mr-1" />+{trends.completion}% 较上月
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 图表和数据分析 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* 销售趋势图 */}
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <TrendingUp className="w-5 h-5 text-blue-600" />
+              <span>销售趋势</span>
+            </CardTitle>
+            <CardDescription>过去6个月的销售表现</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={salesData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="month" stroke="#64748b" />
+                <YAxis stroke="#64748b" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "rgba(255, 255, 255, 0.95)",
+                    border: "none",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="sales"
+                  stroke="#3b82f6"
+                  strokeWidth={3}
+                  dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="target"
+                  stroke="#10b981"
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  dot={{ fill: "#10b981", strokeWidth: 2, r: 3 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* 任务状态分布 */}
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <BarChart3 className="w-5 h-5 text-emerald-600" />
+              <span>任务状态分布</span>
+            </CardTitle>
+            <CardDescription>当前任务的状态分布情况</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-center">
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={taskStatusData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={120}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {taskStatusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              {taskStatusData.map((item, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
+                  <span className="text-sm text-slate-600">{item.name}</span>
+                  <span className="text-sm font-semibold text-slate-800">{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 最近活动和快速操作 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* 最近活动 */}
+        <Card className="lg:col-span-2 bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Activity className="w-5 h-5 text-purple-600" />
+              <span>最近活动</span>
+            </CardTitle>
+            <CardDescription>系统中的最新动态</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recentActivities.map((activity) => (
+                <div
+                  key={activity.id}
+                  className="flex items-start space-x-3 p-3 rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                  <div className="flex-shrink-0">
+                    {activity.type === "task" && <CheckSquare className="w-5 h-5 text-emerald-600" />}
+                    {activity.type === "customer" && <Users className="w-5 h-5 text-blue-600" />}
+                    {activity.type === "approval" && <AlertTriangle className="w-5 h-5 text-orange-600" />}
+                    {activity.type === "meeting" && <Calendar className="w-5 h-5 text-purple-600" />}
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-slate-800">{activity.title}</p>
+                    <p className="text-sm text-slate-600">由 {activity.user} 执行</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <Clock className="w-3 h-3 text-slate-400" />
+                      <span className="text-xs text-slate-500">{activity.time}</span>
+                      <Badge
+                        variant={
+                          activity.status === "completed"
+                            ? "default"
+                            : activity.status === "pending"
+                              ? "destructive"
+                              : "secondary"
+                        }
+                        className="text-xs"
+                      >
+                        {activity.status === "completed"
+                          ? "已完成"
+                          : activity.status === "pending"
+                            ? "待处理"
+                            : activity.status === "new"
+                              ? "新增"
+                              : "已安排"}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 快速操作 */}
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Target className="w-5 h-5 text-indigo-600" />
+              <span>快速操作</span>
+            </CardTitle>
+            <CardDescription>常用功能快速入口</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button className="w-full justify-start bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700">
+              <Plus className="w-4 h-4 mr-2" />
+              新建任务
+            </Button>
+            <Button variant="outline" className="w-full justify-start bg-transparent">
+              <Users className="w-4 h-4 mr-2" />
+              添加客户
+            </Button>
+            <Button variant="outline" className="w-full justify-start bg-transparent">
+              <Calendar className="w-4 h-4 mr-2" />
+              安排会议
+            </Button>
+            <Button variant="outline" className="w-full justify-start bg-transparent">
+              <BarChart3 className="w-4 h-4 mr-2" />
+              查看报表
+            </Button>
+            <Button variant="outline" className="w-full justify-start bg-transparent">
+              <Bell className="w-4 h-4 mr-2" />
+              发送通知
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 系统状态 */}
+      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <CheckCircle className="w-5 h-5 text-green-600" />
+            <span>系统状态</span>
+          </CardTitle>
+          <CardDescription>系统运行状态和性能指标</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-600">CPU使用率</span>
+                <span className="font-medium">23%</span>
+              </div>
+              <Progress value={23} className="h-2" />
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-600">内存使用率</span>
+                <span className="font-medium">67%</span>
+              </div>
+              <Progress value={67} className="h-2" />
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-600">存储使用率</span>
+                <span className="font-medium">45%</span>
+              </div>
+              <Progress value={45} className="h-2" />
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* 统计卡片 */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon
-          const TrendIcon = stat.trend === "up" ? ArrowUpRight : ArrowDownRight
-
-          return (
-            <Card
-              key={index}
-              className="bg-white/80 backdrop-blur-sm border border-sky-200 rounded-lg md:rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105"
-            >
-              <CardContent className="p-3 md:p-6">
-                <div className="flex flex-col md:flex-row md:items-center justify-between space-y-2 md:space-y-0">
-                  <div className="flex-1">
-                    <p className="text-xs md:text-sm font-medium text-slate-600 mb-1">{stat.title}</p>
-                    <p className="text-lg md:text-2xl font-bold text-slate-800 truncate">{stat.value}</p>
-                    <div className="flex items-center mt-1 md:mt-2">
-                      <TrendIcon
-                        className={`w-3 h-3 mr-1 ${stat.trend === "up" ? "text-emerald-500" : "text-red-500"}`}
-                      />
-                      <span
-                        className={`text-xs md:text-sm font-medium ${
-                          stat.trend === "up" ? "text-emerald-600" : "text-red-600"
-                        }`}
-                      >
-                        {stat.change}
-                      </span>
-                      <span className="text-xs text-slate-500 ml-1 hidden md:inline">vs 上月</span>
-                    </div>
-                  </div>
-                  <div
-                    className={`w-8 h-8 md:w-12 md:h-12 bg-gradient-to-br ${stat.color} rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0`}
-                  >
-                    <Icon className="w-4 h-4 md:w-6 md:h-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
-
-      {/* 主要内容区域 */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
-        {/* 图表区域 */}
-        <div className="xl:col-span-2 space-y-4 md:space-y-6">
-          <Card className="bg-white/80 backdrop-blur-sm border border-sky-200 rounded-lg md:rounded-xl shadow-sm">
-            <CardHeader className="pb-3 md:pb-6">
-              <CardTitle className="flex items-center text-base md:text-lg">
-                <Activity className="w-4 h-4 md:w-5 md:h-5 mr-2 text-sky-500" />
-                业务数据分析
-              </CardTitle>
-              <CardDescription className="text-sm">实时监控关键业务指标</CardDescription>
-            </CardHeader>
-            <CardContent className="p-3 md:p-6 pt-0">
-              <Tabs defaultValue="sales" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 bg-sky-100/50 h-8 md:h-10">
-                  <TabsTrigger
-                    value="sales"
-                    className="data-[state=active]:bg-white data-[state=active]:text-sky-700 text-xs md:text-sm"
-                  >
-                    销售趋势
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="finance"
-                    className="data-[state=active]:bg-white data-[state=active]:text-sky-700 text-xs md:text-sm"
-                  >
-                    财务状况
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="performance"
-                    className="data-[state=active]:bg-white data-[state=active]:text-sky-700 text-xs md:text-sm"
-                  >
-                    绩效指标
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="sales" className="mt-4 md:mt-6">
-                  <div className="h-64 md:h-80">
-                    <SalesChart />
-                  </div>
-                </TabsContent>
-                <TabsContent value="finance" className="mt-4 md:mt-6">
-                  <div className="h-64 md:h-80">
-                    <FinanceChart />
-                  </div>
-                </TabsContent>
-                <TabsContent value="performance" className="mt-4 md:mt-6">
-                  <div className="h-64 md:h-80">
-                    <PerformanceChart />
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* 侧边栏信息 */}
-        <div className="space-y-4 md:space-y-6">
-          {/* 快速操作 */}
-          <Card className="bg-white/80 backdrop-blur-sm border border-sky-200 rounded-lg md:rounded-xl shadow-sm">
-            <CardHeader className="pb-3 md:pb-6">
-              <CardTitle className="flex items-center text-base md:text-lg">
-                <Zap className="w-4 h-4 md:w-5 md:h-5 mr-2 text-sky-500" />
-                快速操作
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-3 md:p-6 pt-0">
-              <div className="grid grid-cols-2 gap-2 md:gap-3">
-                {quickActions.map((action, index) => {
-                  const Icon = action.icon
-                  return (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      className="h-12 md:h-16 flex flex-col items-center justify-center space-y-1 md:space-y-2 border-sky-200 hover:bg-sky-50 transition-all duration-200"
-                    >
-                      <div
-                        className={`w-6 h-6 md:w-8 md:h-8 ${action.color} rounded-lg flex items-center justify-center`}
-                      >
-                        <Icon className="w-3 h-3 md:w-4 md:h-4 text-white" />
-                      </div>
-                      <span className="text-xs font-medium">{action.label}</span>
-                    </Button>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 最近活动 */}
-          <Card className="bg-white/80 backdrop-blur-sm border border-sky-200 rounded-lg md:rounded-xl shadow-sm">
-            <CardHeader className="pb-3 md:pb-6">
-              <CardTitle className="flex items-center text-base md:text-lg">
-                <Clock className="w-4 h-4 md:w-5 md:h-5 mr-2 text-sky-500" />
-                最近活动
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-3 md:p-6 pt-0">
-              <div className="space-y-3 md:space-y-4">
-                {recentActivities.slice(0, 4).map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-start space-x-3 p-2 md:p-3 rounded-lg hover:bg-sky-50/50 transition-colors duration-200"
-                  >
-                    <div
-                      className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                        activity.status === "success"
-                          ? "bg-emerald-500"
-                          : activity.status === "warning"
-                            ? "bg-orange-500"
-                            : activity.status === "info"
-                              ? "bg-blue-500"
-                              : "bg-slate-400"
-                      }`}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-800 truncate">{activity.title}</p>
-                      <p className="text-xs text-slate-600 mt-1 line-clamp-2">{activity.description}</p>
-                      <p className="text-xs text-slate-400 mt-1">{activity.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <Button variant="outline" className="w-full mt-3 md:mt-4 border-sky-200 hover:bg-sky-50 text-sm">
-                查看全部活动
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* 系统状态 */}
-          <Card className="bg-white/80 backdrop-blur-sm border border-sky-200 rounded-lg md:rounded-xl shadow-sm">
-            <CardHeader className="pb-3 md:pb-6">
-              <CardTitle className="flex items-center text-base md:text-lg">
-                <Activity className="w-4 h-4 md:w-5 md:h-5 mr-2 text-sky-500" />
-                系统状态
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-3 md:p-6 pt-0">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">系统运行时间</span>
-                  <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">
-                    99.9%
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">数据库状态</span>
-                  <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs">
-                    正常
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">在线用户</span>
-                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
-                    24
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">待处理任务</span>
-                  <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 text-xs">
-                    8
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
