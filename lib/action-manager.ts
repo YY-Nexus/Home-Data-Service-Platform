@@ -1,255 +1,155 @@
 "use client"
 
-// 操作管理器 - 管理全局操作和事件
-class ActionManager {
-  private listeners: Map<string, Array<(data?: any) => void>> = new Map()
-  private actionQueue: Array<{ action: string; data: any; timestamp: number }> = []
-  private isProcessing = false
+type ActionType =
+  | "schedule"
+  | "notifications"
+  | "profile"
+  | "settings"
+  | "create-task"
+  | "add-customer"
+  | "create-meeting"
 
-  // 注册操作监听器
-  on(action: string, callback: (data?: any) => void) {
-    if (!this.listeners.has(action)) {
-      this.listeners.set(action, [])
+interface ActionData {
+  type: ActionType
+  payload?: any
+  timestamp: number
+}
+
+class ActionManager {
+  private listeners: Map<ActionType, ((data: any) => void)[]> = new Map()
+  private history: ActionData[] = []
+
+  // 注册动作监听器
+  on(actionType: ActionType, callback: (data: any) => void) {
+    if (!this.listeners.has(actionType)) {
+      this.listeners.set(actionType, [])
     }
-    this.listeners.get(action)!.push(callback)
-    console.log(`操作监听器已注册: ${action}`)
+    this.listeners.get(actionType)!.push(callback)
   }
 
-  // 移除操作监听器
-  off(action: string, callback: (data?: any) => void) {
-    const listeners = this.listeners.get(action)
-    if (listeners) {
-      const index = listeners.indexOf(callback)
+  // 移除动作监听器
+  off(actionType: ActionType, callback: (data: any) => void) {
+    const callbacks = this.listeners.get(actionType)
+    if (callbacks) {
+      const index = callbacks.indexOf(callback)
       if (index > -1) {
-        listeners.splice(index, 1)
-        console.log(`操作监听器已移除: ${action}`)
+        callbacks.splice(index, 1)
       }
     }
   }
 
-  // 触发操作
-  trigger(action: string, data?: any) {
-    console.log(`触发操作: ${action}`, data)
-
-    // 添加到操作队列
-    this.actionQueue.push({
-      action,
-      data,
+  // 触发动作
+  trigger(actionType: ActionType, payload?: any) {
+    const actionData: ActionData = {
+      type: actionType,
+      payload,
       timestamp: Date.now(),
-    })
+    }
 
-    // 处理操作队列
-    this.processQueue()
+    // 记录到历史
+    this.history.push(actionData)
+    if (this.history.length > 100) {
+      this.history.shift() // 保持最近100条记录
+    }
 
     // 触发监听器
-    const listeners = this.listeners.get(action)
-    if (listeners) {
-      listeners.forEach((callback) => {
+    const callbacks = this.listeners.get(actionType)
+    if (callbacks) {
+      callbacks.forEach((callback) => {
         try {
-          callback(data)
+          callback(payload)
         } catch (error) {
-          console.error(`操作监听器执行失败: ${action}`, error)
+          console.error(`Action callback error for ${actionType}:`, error)
         }
       })
     }
 
-    // 触发全局事件
-    window.dispatchEvent(new CustomEvent(`action:${action}`, { detail: data }))
+    console.log(`Action triggered: ${actionType}`, payload)
   }
 
-  // 处理操作队列
-  private async processQueue() {
-    if (this.isProcessing) return
-
-    this.isProcessing = true
-
-    while (this.actionQueue.length > 0) {
-      const { action, data } = this.actionQueue.shift()!
-
-      try {
-        await this.executeAction(action, data)
-      } catch (error) {
-        console.error(`操作执行失败: ${action}`, error)
-      }
-
-      // 添加小延迟避免阻塞
-      await new Promise((resolve) => setTimeout(resolve, 10))
-    }
-
-    this.isProcessing = false
+  // 获取动作历史
+  getHistory(): ActionData[] {
+    return [...this.history]
   }
 
-  // 执行具体操作
-  private async executeAction(action: string, data?: any) {
-    switch (action) {
-      case "schedule":
-        this.handleScheduleAction(data)
-        break
-      case "profile":
-        this.handleProfileAction(data)
-        break
-      case "settings":
-        this.handleSettingsAction(data)
-        break
-      case "notifications":
-        this.handleNotificationAction(data)
-        break
-      default:
-        console.log(`未知操作: ${action}`, data)
-    }
-  }
-
-  // 处理日程操作
-  private handleScheduleAction(data: any) {
-    console.log("处理日程操作:", data)
-
-    if (data && data.title) {
-      // 保存到本地存储
-      const schedules = JSON.parse(localStorage.getItem("schedules") || "[]")
-      schedules.push(data)
-      localStorage.setItem("schedules", JSON.stringify(schedules))
-
-      // 设置提醒
-      if (data.date && data.time) {
-        const scheduleTime = new Date(`${data.date}T${data.time}`)
-        const now = new Date()
-        const timeDiff = scheduleTime.getTime() - now.getTime()
-
-        if (timeDiff > 0 && timeDiff < 24 * 60 * 60 * 1000) {
-          // 24小时内
-          setTimeout(
-            () => {
-              if ("Notification" in window && Notification.permission === "granted") {
-                new Notification("会议提醒", {
-                  body: `会议"${data.title}"即将开始`,
-                  icon: "/images/yanyu-cloud-logo.png",
-                })
-              }
-            },
-            Math.max(0, timeDiff - 15 * 60 * 1000),
-          ) // 提前15分钟提醒
-        }
-      }
-    }
-  }
-
-  // 处理个人资料操作
-  private handleProfileAction(data: any) {
-    console.log("处理个人资料操作:", data)
-
-    if (data) {
-      // 更新全局用户状态
-      window.dispatchEvent(new CustomEvent("userProfileUpdated", { detail: data }))
-    }
-  }
-
-  // 处理设置操作
-  private handleSettingsAction(data: any) {
-    console.log("处理设置操作:", data)
-
-    if (data) {
-      // 应用设置
-      if (data.interface?.darkMode !== undefined) {
-        document.documentElement.setAttribute("data-theme", data.interface.darkMode ? "dark" : "light")
-      }
-
-      if (data.interface?.compactLayout !== undefined) {
-        document.documentElement.classList.toggle("compact-layout", data.interface.compactLayout)
-      }
-
-      // 更新全局设置状态
-      window.dispatchEvent(new CustomEvent("userSettingsUpdated", { detail: data }))
-    }
-  }
-
-  // 处理通知操作
-  private handleNotificationAction(data: any) {
-    console.log("处理通知操作:", data)
-
-    if (data && data.message) {
-      // 显示通知
-      if ("Notification" in window && Notification.permission === "granted") {
-        new Notification("系统通知", {
-          body: data.message,
-          icon: "/images/yanyu-cloud-logo.png",
-        })
-      }
-    }
-  }
-
-  // 获取操作历史
-  getActionHistory() {
-    return [...this.actionQueue]
-  }
-
-  // 清除操作历史
+  // 清空历史
   clearHistory() {
-    this.actionQueue = []
-  }
-
-  // 获取所有监听器
-  getListeners() {
-    const result: Record<string, number> = {}
-    this.listeners.forEach((listeners, action) => {
-      result[action] = listeners.length
-    })
-    return result
+    this.history = []
   }
 }
 
 // 创建全局实例
 export const actionManager = new ActionManager()
 
-// 设置默认操作
+// 预定义的动作处理器
 export const setupDefaultActions = () => {
-  console.log("设置默认操作...")
-
-  // 导航操作
-  actionManager.on("navigate", (data) => {
-    console.log("导航到:", data)
-    if (data && data.module) {
-      window.dispatchEvent(new CustomEvent("moduleChange", { detail: data.module }))
+  // 日程安排
+  actionManager.on("schedule", (data) => {
+    console.log("处理日程安排:", data)
+    // 发送成功通知
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("日程已创建", {
+        body: `会议"${data?.title || "新会议"}"已成功创建`,
+        icon: "/images/yanyu-cloud-logo.png",
+      })
     }
   })
 
-  // 数据操作
-  actionManager.on("dataRefresh", () => {
-    console.log("刷新数据")
-    window.dispatchEvent(new CustomEvent("dataRefresh"))
-  })
-
-  actionManager.on("dataExport", (data) => {
-    console.log("导出数据:", data)
-    // 模拟导出
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `export_${Date.now()}.json`
-    a.click()
-    URL.revokeObjectURL(url)
-  })
-
-  // 系统操作
-  actionManager.on("systemReset", () => {
-    if (confirm("确定要重置系统吗？这将清除所有本地数据。")) {
-      localStorage.clear()
-      window.location.reload()
+  // 通知中心
+  actionManager.on("notifications", (data) => {
+    console.log("处理通知:", data)
+    // 发送通知
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("言语云提醒", {
+        body: data?.message || "通知功能正常工作！",
+        icon: "/images/yanyu-cloud-logo.png",
+      })
     }
   })
 
-  console.log("默认操作设置完成")
-}
+  // 个人资料
+  actionManager.on("profile", (data) => {
+    console.log("处理个人资料:", data)
+    if (data?.updated) {
+      // 发送更新成功通知
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("个人资料已更新", {
+          body: "您的个人资料已成功保存",
+          icon: "/images/yanyu-cloud-logo.png",
+        })
+      }
+    }
+  })
 
-// 导出便捷函数
-export const triggerAction = (action: string, data?: any) => {
-  actionManager.trigger(action, data)
-}
+  // 系统设置
+  actionManager.on("settings", (data) => {
+    console.log("处理系统设置:", data)
+    if (data?.updated) {
+      // 发送设置保存成功通知
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("设置已保存", {
+          body: "系统设置已成功更新",
+          icon: "/images/yanyu-cloud-logo.png",
+        })
+      }
+    }
+  })
 
-export const onAction = (action: string, callback: (data?: any) => void) => {
-  actionManager.on(action, callback)
-}
+  // 创建任务
+  actionManager.on("create-task", (data) => {
+    console.log("创建新任务:", data)
+    // 这里可以添加任务创建逻辑
+  })
 
-export const offAction = (action: string, callback: (data?: any) => void) => {
-  actionManager.off(action, callback)
+  // 添加客户
+  actionManager.on("add-customer", (data) => {
+    console.log("添加新客户:", data)
+    // 这里可以添加客户创建逻辑
+  })
+
+  // 创建会议
+  actionManager.on("create-meeting", (data) => {
+    console.log("创建新会议:", data)
+    // 这里可以添加会议创建逻辑
+  })
 }

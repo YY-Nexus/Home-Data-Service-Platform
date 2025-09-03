@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/sidebar"
 import { MobileLayout } from "@/components/mobile/mobile-layout"
 import { MobileDashboard } from "@/components/mobile/mobile-dashboard"
 import { SystemInitializer } from "@/components/system-initializer"
+import { AutomatedTestRunner } from "@/components/automated-test-runner"
 import { MobileDetectionService } from "@/lib/mobile-detection"
 import { mobileNotificationService } from "@/lib/mobile-notifications"
 import { QuickActionHandler } from "@/components/quick-action-handler"
@@ -30,7 +31,6 @@ export default function HomePage() {
   const [isInitialized, setIsInitialized] = useState(false)
   const [initError, setInitError] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   // 初始化操作管理器
   useEffect(() => {
@@ -186,33 +186,46 @@ export default function HomePage() {
     )
   }
 
-  // 桌面端布局 - 只有一套导航系统
+  // 桌面端布局
   return (
-    <div className="flex h-screen bg-slate-50">
-      {/* 侧边栏 - 只渲染一次 */}
-      <div className={`${sidebarOpen ? "block" : "hidden"} lg:block fixed lg:relative z-30 h-full`}>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* 自动化测试运行器 */}
+      <AutomatedTestRunner />
+
+      {/* 快速操作处理器 */}
+      <QuickActionHandler
+        onActionComplete={(action, data) => {
+          console.log(`桌面端快速操作完成: ${action}`, data)
+
+          // 根据操作类型提供用户反馈
+          switch (action) {
+            case "schedule":
+              console.log("日程创建成功:", data)
+              break
+            case "profile":
+              console.log("个人资料更新成功:", data)
+              break
+            case "settings":
+              console.log("系统设置保存成功:", data)
+              break
+          }
+        }}
+      />
+
+      <div className="flex h-screen">
+        {/* 侧边栏 */}
         <Sidebar activeModule={activeModule} setActiveModule={setActiveModule} />
-      </div>
 
-      {/* 移动端遮罩 */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
+        {/* 主内容区域 */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* 顶部导航 */}
+          <Header />
 
-      {/* 主内容区域 */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* 头部 - 只渲染一次 */}
-        <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-
-        {/* 主内容 */}
-        <main className="flex-1 overflow-y-auto">
-          <QuickActionHandler
-            onActionComplete={(action, data) => {
-              console.log(`快速操作完成: ${action}`, data)
-            }}
-          />
-          {renderActiveModule()}
-        </main>
+          {/* 主要内容 */}
+          <main className="flex-1 overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+            <div className="h-full">{renderActiveModule()}</div>
+          </main>
+        </div>
       </div>
     </div>
   )
